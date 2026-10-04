@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Check, X } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
-import { SKUS } from '@/data/mockData';
 import type { ProductSku } from '@/types';
 import { Button, inputClass } from '@/components/ui';
 import { matchesQuery, POSITION_LABEL } from '@/lib/tyres';
@@ -16,7 +15,7 @@ interface ParsedLine {
 }
 
 /** "11R22.5 BD175, 8" → { query: "11R22.5 BD175", qty: 8 }. The last number on the line is the quantity. */
-function parse(input: string): ParsedLine[] {
+function parse(input: string, SKUS: ProductSku[]): ParsedLine[] {
   return input
     .split('\n')
     .map((line) => line.trim())
@@ -33,10 +32,10 @@ function parse(input: string): ParsedLine[] {
 }
 
 export default function QuickOrderPage() {
-  const { addToCart } = useApp();
+  const { addToCart, catalogue } = useApp();
   const [input, setInput] = useState('');
   const [added, setAdded] = useState(0);
-  const lines = useMemo(() => parse(input), [input]);
+  const lines = useMemo(() => parse(input, catalogue.visibleSkus), [input, catalogue.visibleSkus]);
   const matched = lines.filter((l) => l.sku);
 
   return (

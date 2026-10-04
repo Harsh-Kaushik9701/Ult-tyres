@@ -42,9 +42,14 @@ export default function PatternSizes({ pattern }: { pattern: Pattern }) {
       <dl className="mt-8">
         <Spec label="Full size" value={sku.fullSizeCode} />
         <Spec label="Position" value={POSITION_LABEL[sku.axlePosition]} />
-        <Spec label="Load index" value={`${sku.loadIndexSingle}/${sku.loadIndexDual}`} />
-        <Spec label="Tread depth" value={`${sku.treadDepthMm} mm`} />
-        <Spec label="Ply rating" value={sku.plyRating} />
+        {sku.loadIndexSingle > 0 && (
+          <Spec
+            label="Load index"
+            value={sku.loadIndexDual > 0 ? `${sku.loadIndexSingle}/${sku.loadIndexDual}` : sku.loadIndexSingle}
+          />
+        )}
+        {sku.treadDepthMm > 0 && <Spec label="Tread depth" value={`${sku.treadDepthMm} mm`} />}
+        {sku.plyRating && <Spec label="Ply rating" value={sku.plyRating} />}
         <Spec label="Availability" value={AVAILABILITY_LABEL[band]} />
       </dl>
 

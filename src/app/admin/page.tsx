@@ -3,14 +3,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
-import { SKUS } from '@/data/mockData';
 import type { OrderStatus, PricingRequest, SkuPriceMatrix } from '@/types';
 import { Button, inputClass } from '@/components/ui';
 import { OrderStatusPill, QuoteStatusPill } from '@/components/StatusPill';
 import { money, shortDate, poLabel } from '@/lib/status';
 import { getSuggestedPrices, getPriceMatrix } from './actions';
+import TyresTab from './TyresTab';
+import StockTab from './StockTab';
 
-type AdminTab = 'requests' | 'applications' | 'orders' | 'prices';
+type AdminTab = 'requests' | 'applications' | 'orders' | 'tyres' | 'stock' | 'prices';
 
 const BRANCH_NAMES = ['Rocklea', 'Yatala', 'Bald Hills'] as const;
 
@@ -23,6 +24,7 @@ export default function AdminPage() {
     adminRejectApplication,
     orders,
     adminUpdateOrderStatus,
+    catalogue,
   } = useApp();
 
   const [tab, setTab] = useState<AdminTab>('requests');
@@ -85,6 +87,8 @@ export default function AdminPage() {
     { id: 'requests', label: 'Pricing requests', count: waiting },
     { id: 'applications', label: 'Dealer applications', count: pendingApps },
     { id: 'orders', label: 'Orders' },
+    { id: 'tyres', label: 'Tyres' },
+    { id: 'stock', label: 'Stock' },
     { id: 'prices', label: 'Price list' },
   ];
 
@@ -322,6 +326,9 @@ export default function AdminPage() {
           </section>
         )}
 
+        {tab === 'tyres' && <TyresTab />}
+        {tab === 'stock' && <StockTab />}
+
         {/* Price list */}
         {tab === 'prices' && (
           <section>
@@ -351,7 +358,7 @@ export default function AdminPage() {
                     </tr>
                   )}
                   {Object.entries(matrix ?? {}).map(([skuId, item]) => {
-                    const sku = SKUS.find((s) => s.id === skuId);
+                    const sku = catalogue.allSkus.find((s) => s.id === skuId);
                     return (
                       <tr key={skuId}>
                         <td className="px-6 py-3">

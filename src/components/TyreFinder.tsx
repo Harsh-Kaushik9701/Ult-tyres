@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { BRANDS, SKUS } from '@/data/mockData';
+import { BRANDS } from '@/data/mockData';
+import { useApp } from '@/context/AppContext';
 import type { AxlePosition, TyreCategory } from '@/types';
 import { POSITION_LABEL, matchesQuery, patternHref } from '@/lib/tyres';
 import { availabilityBand, totalStock, AVAILABILITY_LABEL } from '@/lib/availability';
@@ -17,6 +18,7 @@ const BAND_DOT = { 'in-stock': 'bg-ok', 'low-stock': 'bg-warn', 'on-order': 'bg-
 /** Search box + position chips + simple result list for one tyre category. */
 export default function TyreFinder({ category }: { category?: TyreCategory }) {
   const params = useSearchParams();
+  const SKUS = useApp().catalogue.visibleSkus;
   const [query, setQuery] = useState(params.get('size') ?? '');
   const [position, setPosition] = useState<'all' | AxlePosition>((params.get('pos') as AxlePosition) || 'all');
   const [brand, setBrand] = useState(params.get('brand') ?? 'all');
@@ -30,7 +32,7 @@ export default function TyreFinder({ category }: { category?: TyreCategory }) {
           (brand === 'all' || s.brandName.toLowerCase() === brand) &&
           matchesQuery(s, query)
       ),
-    [category, position, brand, query]
+    [SKUS, category, position, brand, query]
   );
 
   const availablePositions = POSITIONS.filter(

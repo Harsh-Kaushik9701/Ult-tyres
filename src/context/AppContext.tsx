@@ -14,8 +14,8 @@ import {
   INITIAL_PRICING_REQUESTS,
   INITIAL_ORDERS,
   INITIAL_APPLICATIONS,
-  SKUS,
 } from '@/data/mockData';
+import { useCatalogueState, type CatalogueState } from '@/context/useCatalogue';
 
 /** Demo role switcher and one-click demo logins. Off unless NEXT_PUBLIC_DEMO_MODE=true. */
 export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -72,6 +72,9 @@ interface AppContextType {
   adminApproveApplication: (appId: string, tier: 'A' | 'B' | 'C', branch: 'Rocklea' | 'Yatala' | 'Bald Hills') => void;
   adminRejectApplication: (appId: string) => void;
 
+  // Tyre catalogue (patterns, sizes, stock) — see useCatalogue.ts
+  catalogue: CatalogueState;
+
   // Notification Toast simulation
   recentNotification: string | null;
   clearNotification: () => void;
@@ -87,6 +90,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [applications, setApplications] = useState<DealerApplication[]>(INITIAL_APPLICATIONS);
   const [recentNotification, setRecentNotification] = useState<string | null>(null);
+  const catalogue = useCatalogueState(hydrated);
 
   // Load from localStorage after mount. Reading it during render would make the
   // server and client HTML differ. Interim only: MongoDB replaces this store.
@@ -449,7 +453,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!order) return;
 
     order.lines.forEach((line) => {
-      const fullSku = SKUS.find((s) => s.id === line.skuId);
+      const fullSku = catalogue.visibleSkus.find((s) => s.id === line.skuId);
       if (fullSku) {
         addToCart(fullSku, line.quantity);
       }
@@ -514,6 +518,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         submitDealerApplication,
         adminApproveApplication,
         adminRejectApplication,
+        catalogue,
         recentNotification,
         clearNotification,
       }}
