@@ -1,33 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import {
-  LayoutDashboard,
-  Search,
-  Zap,
-  ShoppingCart,
-  FileSpreadsheet,
-  Package,
-  Settings,
-  LogOut,
-  ChevronDown,
-  Bell,
-  Menu,
-  X,
-  Shield,
-  Phone,
-  ArrowRight,
-  ExternalLink,
-} from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { SITE } from '@/data/site';
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { hydrated, session, switchRole, cart, pricingRequests } = useApp();
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Only signed-in dealer users (owner, buyer, staff) may use the portal.
   const isDealerUser = !!session?.dealerId && session.role !== 'admin';
@@ -35,210 +18,93 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     if (hydrated && !isDealerUser) router.replace('/dealer/login');
   }, [hydrated, isDealerUser, router]);
 
-  // Ready quotes needing dealer action
-  const pendingQuotes = pricingRequests.filter(
-    (r) => r.status === 'quote_ready' && r.dealerId === session?.dealerId
-  ).length;
-
-  const isActive = (path: string) => pathname === path || (path !== '/portal' && pathname?.startsWith(path));
-
-  const navItems = [
-    { label: 'Dashboard', path: '/portal', icon: LayoutDashboard },
-    { label: 'Tyre Catalogue', path: '/portal/catalogue', icon: Search },
-    { label: 'SKU Rapid Order', path: '/portal/rapid-order', icon: Zap },
-    {
-      label: 'RFQ Cart',
-      path: '/portal/cart',
-      icon: ShoppingCart,
-      badge: cart.length > 0 ? cart.reduce((a, b) => a + b.quantity, 0) : undefined,
-    },
-    {
-      label: 'Quotes & Pricing',
-      path: '/portal/quotes',
-      icon: FileSpreadsheet,
-      badge: pendingQuotes > 0 ? `${pendingQuotes} Ready` : undefined,
-      badgeColor: 'bg-[#D50000] text-white',
-    },
-    { label: 'Orders & Dispatch', path: '/portal/orders', icon: Package },
-    { label: 'Account & Team', path: '/portal/account', icon: Settings },
-  ];
-
   if (!hydrated || !isDealerUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F4F6F8] text-[#6C757D] text-sm" role="status">
-        {hydrated ? 'Redirecting to dealer login…' : 'Loading your account…'}
+      <div className="flex min-h-screen items-center justify-center text-[15px] text-muted" role="status">
+        {hydrated ? 'Taking you to the login page…' : 'Loading your account…'}
       </div>
     );
   }
 
+  const readyQuotes = pricingRequests.filter((r) => r.status === 'quote_ready' && r.dealerId === session?.dealerId).length;
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const tabs = [
+    { label: 'Home', href: '/portal' },
+    { label: 'Tyres', href: '/portal/catalogue' },
+    { label: 'Quick order', href: '/portal/rapid-order' },
+    { label: 'Cart', href: '/portal/cart', badge: cartCount || undefined },
+    { label: 'Quotes', href: '/portal/quotes', badge: readyQuotes || undefined, alert: readyQuotes > 0 },
+    { label: 'Orders', href: '/portal/orders' },
+    { label: 'Account', href: '/portal/account' },
+  ];
+  const isActive = (href: string) => pathname === href || (href !== '/portal' && pathname.startsWith(href));
+
   return (
-    <div className="min-h-screen flex bg-[#F4F6F8] text-[#1C1F22]">
-      {/* Charcoal Sidebar (Blueprint Page 12) */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1C1F22] text-[#CED4DA] flex flex-col justify-between border-r border-[#2B3036] transition-transform duration-200 lg:translate-x-0 ${
-          mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div>
-          {/* Logo Monogram Badge */}
-          <div className="p-5 border-b border-[#2B3036] flex items-center justify-between">
-            <Link href="/portal" className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded bg-[#D50000] flex items-center justify-center font-condensed font-black text-xl text-white shadow">
-                UT
-              </div>
-              <div>
-                <span className="font-condensed font-black text-lg text-white tracking-wider block leading-tight">
-                  ULTIMATE TYRES
-                </span>
-                <span className="text-[10px] uppercase font-bold text-amber-400 font-mono tracking-wider">
-                  Dealer Portal
-                </span>
-              </div>
-            </Link>
-
+    <div className="flex min-h-screen flex-col bg-white">
+      <header className="sticky top-0 z-40 border-b border-line/70 bg-white/85 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-[1080px] items-center justify-between gap-4 px-5">
+          <Link href="/portal" className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-[13px] font-bold text-white">UT</span>
+            <span className="text-[15px] font-semibold tracking-tight">Dealer portal</span>
+          </Link>
+          <div className="flex items-center gap-4 text-[13px]">
+            <span className="hidden text-muted sm:inline">{session?.dealerName}</span>
             <button
-              onClick={() => setMobileSidebarOpen(false)}
-              className="lg:hidden text-[#868E96] hover:text-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Account Profile Block */}
-          <div className="p-4 bg-[#121416]/60 border-b border-[#25292E]">
-            <div className="text-[10px] uppercase font-bold text-[#868E96] font-condensed">
-              Active Trade Account
-            </div>
-            <div className="font-condensed font-bold text-sm text-white truncate mt-0.5">
-              {session?.dealerName}
-            </div>
-            <div className="flex items-center gap-2 mt-1.5 text-[11px] font-mono">
-              <span className="bg-[#25292E] text-amber-400 px-1.5 py-0.5 rounded border border-[#343A40]">
-                Tier {session?.tier}
-              </span>
-              <span className="text-[#868E96]">{session?.branch}</span>
-            </div>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="p-3 space-y-1 font-condensed tracking-wide text-sm font-semibold">
-            {navItems.map((item) => {
-              const active = isActive(item.path);
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  onClick={() => setMobileSidebarOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg transition ${
-                    active
-                      ? 'bg-[#D50000] text-white shadow'
-                      : 'text-[#CED4DA] hover:text-white hover:bg-[#25292E]'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span>{item.label}</span>
-                  </div>
-
-                  {item.badge !== undefined && (
-                    <span
-                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                        item.badgeColor || 'bg-[#25292E] text-white'
-                      }`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-[#25292E] space-y-3">
-          <div className="text-xs text-[#868E96]">
-            <div>User: <strong className="text-white">{session?.name}</strong></div>
-            <div className="capitalize text-[11px]">Role: <span className="text-emerald-400">{session?.role}</span></div>
-          </div>
-
-          <div className="pt-2 border-t border-[#25292E] flex items-center justify-between text-xs">
-            <Link
-              href="/"
-              className="text-[#868E96] hover:text-white flex items-center gap-1 font-condensed uppercase font-bold"
-            >
-              <span>Public Site</span>
-              <ExternalLink className="w-3 h-3" />
-            </Link>
-
-            <button
+              type="button"
               onClick={() => {
                 switchRole('public');
                 router.push('/');
               }}
-              className="text-red-400 hover:text-red-300 flex items-center gap-1 font-condensed uppercase font-bold"
+              className="text-ink/75 hover:text-ink"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Exit</span>
+              Log out
             </button>
           </div>
         </div>
-      </aside>
+        <nav className="mx-auto max-w-[1080px] overflow-x-auto px-3" aria-label="Portal">
+          <ul className="flex gap-1 pb-2">
+            {tabs.map((t) => {
+              const active = isActive(t.href);
+              return (
+                <li key={t.href}>
+                  <Link
+                    href={t.href}
+                    aria-current={active ? 'page' : undefined}
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[14px] transition ${
+                      active ? 'bg-ink text-white' : 'text-ink/75 hover:bg-panel hover:text-ink'
+                    }`}
+                  >
+                    {t.label}
+                    {t.badge !== undefined && (
+                      <span
+                        className={`min-w-5 rounded-full px-1.5 text-center text-[11px] font-semibold leading-5 ${
+                          t.alert ? 'bg-brand text-white' : active ? 'bg-white/20' : 'bg-panel'
+                        }`}
+                      >
+                        {t.badge}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </header>
 
-      {/* Main Content Area (Clean White / Light for Long Sessions) */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
-        {/* Top Portal Header Bar */}
-        <header className="bg-white border-b border-[#DEE2E6] px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setMobileSidebarOpen(true)}
-              className="lg:hidden p-2 text-[#495057] hover:bg-[#F8F9FA] rounded"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <div className="text-xs font-mono text-[#6C757D] hidden sm:block">
-              Ultimate Tyres B2B Engine &bull; Sydney Edge
-            </div>
-          </div>
+      <main className="mx-auto w-full max-w-[1080px] flex-1 px-5 py-10">{children}</main>
 
-          <div className="flex items-center gap-4">
-            {/* Direct hotline */}
-            <a
-              href="tel:1300110002"
-              className="hidden md:flex items-center gap-1.5 text-xs font-bold text-[#1C1F22] hover:text-[#D50000]"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#D50000]" />
-              <span>Priority Trade Line: 1300 110 002</span>
-            </a>
-
-            {/* Quote Alert Notification */}
-            {pendingQuotes > 0 && (
-              <Link
-                href="/portal/quotes"
-                className="bg-[#D50000]/10 border border-[#D50000]/30 text-[#D50000] px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 animate-pulse"
-              >
-                <Bell className="w-3.5 h-3.5" />
-                <span>{pendingQuotes} Quote Ready for Approval</span>
-              </Link>
-            )}
-
-            {/* Quick Cart */}
-            <Link
-              href="/portal/cart"
-              className="bg-[#1C1F22] text-white px-3 py-1.5 rounded-lg text-xs font-condensed font-bold uppercase flex items-center gap-1.5 hover:bg-[#D50000] transition"
-            >
-              <ShoppingCart className="w-3.5 h-3.5" />
-              <span>Cart ({cart.reduce((a, b) => a + b.quantity, 0)})</span>
-            </Link>
-          </div>
-        </header>
-
-        {/* Dynamic Page Children */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
-          {children}
-        </div>
-      </div>
+      <footer className="border-t border-line/70 py-6 text-center text-[13px] text-muted">
+        Need a hand?{' '}
+        <a href={SITE.phoneHref} className="inline-flex items-center gap-1 text-ink hover:underline">
+          <Phone className="h-3.5 w-3.5" aria-hidden /> {SITE.phone}
+        </a>
+        {' · '}
+        <Link href="/" className="hover:text-ink hover:underline">
+          Main website
+        </Link>
+      </footer>
     </div>
   );
 }

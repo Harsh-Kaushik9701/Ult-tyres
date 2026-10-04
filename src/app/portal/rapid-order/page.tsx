@@ -1,352 +1,110 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import {
-  Zap,
-  Plus,
-  Trash2,
-  CheckCircle2,
-  AlertCircle,
-  FileSpreadsheet,
-  ArrowRight,
-  ShoppingCart,
-} from 'lucide-react';
-import { SKUS } from '@/data/mockData';
+import { Check, X } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
-import { ProductSku } from '@/types';
+import { SKUS } from '@/data/mockData';
+import type { ProductSku } from '@/types';
+import { Button, inputClass } from '@/components/ui';
+import { matchesQuery, POSITION_LABEL } from '@/lib/tyres';
 
-interface OrderRow {
-  id: string;
-  sizeOrSku: string;
-  quantity: number;
-  matchedSku?: ProductSku;
-  isValid: boolean;
+interface ParsedLine {
+  text: string;
+  qty: number;
+  sku?: ProductSku;
 }
 
-export default function RapidOrderPage() {
-  const router = useRouter();
-  const { session, addToCart } = useApp();
-
-  const [rows, setRows] = useState<OrderRow[]>([
-    { id: '1', sizeOrSku: '11R22.5', quantity: 8, matchedSku: SKUS[0], isValid: true },
-    { id: '2', sizeOrSku: '295/80R22.5', quantity: 4, matchedSku: SKUS[1], isValid: true },
-    { id: '3', sizeOrSku: '385/65R22.5', quantity: 4, matchedSku: SKUS[3], isValid: true },
-    { id: '4', sizeOrSku: '', quantity: 2, isValid: false },
-  ]);
-
-  const [excelPasteText, setExcelPasteText] = useState('');
-  const [pasteModalOpen, setPasteModalOpen] = useState(false);
-
-  const cleanSize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-  const matchSku = (input: string): ProductSku | undefined => {
-    if (!input.trim()) return undefined;
-    const q = cleanSize(input);
-    return SKUS.find((s) => {
-      const sNorm = cleanSize(s.size);
-      const codeNorm = cleanSize(s.patternCode);
-      return sNorm.includes(q) || codeNorm.includes(q) || s.id.toLowerCase().includes(q);
+/** "11R22.5 BD175, 8" → { query: "11R22.5 BD175", qty: 8 }. The last number on the line is the quantity. */
+function parse(input: string): ParsedLine[] {
+  return input
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const m = line.match(/^(.*?)[\s,;\t]+(\d{1,3})\s*$/);
+      const text = (m ? m[1] : line).replace(/[,;\t]+$/, '').trim();
+      const qty = m ? Math.min(500, Math.max(1, parseInt(m[2], 10))) : 4;
+      // Every word must match (e.g. size + pattern code).
+      const words = text.split(/\s+/);
+      const sku = SKUS.find((s) => words.every((w) => matchesQuery(s, w)));
+      return { text, qty, sku };
     });
-  };
+}
 
-  const handleRowChange = (id: string, field: 'sizeOrSku' | 'quantity', val: string | number) => {
-    setRows((prev) =>
-      prev.map((row) => {
-        if (row.id !== id) return row;
-        const updated = { ...row, [field]: val };
-        if (field === 'sizeOrSku') {
-          const matched = matchSku(String(val));
-          updated.matchedSku = matched;
-          updated.isValid = Boolean(matched);
-        }
-        return updated;
-      })
-    );
-  };
-
-  const addRow = () => {
-    setRows((prev) => [
-      ...prev,
-      { id: `${Date.now()}`, sizeOrSku: '', quantity: 4, isValid: false },
-    ]);
-  };
-
-  const removeRow = (id: string) => {
-    if (rows.length <= 1) return;
-    setRows((prev) => prev.filter((r) => r.id !== id));
-  };
-
-  const handleParseExcel = () => {
-    if (!excelPasteText.trim()) return;
-
-    const lines = excelPasteText.split(/\r?\n/).filter((l) => l.trim().length > 0);
-    const newRows: OrderRow[] = lines.map((line, idx) => {
-      // Split by tab or comma
-      const parts = line.split(/[\t,]+/);
-      const rawSize = parts[0]?.trim() || '';
-      const rawQty = parseInt(parts[1]?.trim() || '4', 10) || 4;
-
-      const matched = matchSku(rawSize);
-      return {
-        id: `${Date.now()}-${idx}`,
-        sizeOrSku: rawSize,
-        quantity: rawQty,
-        matchedSku: matched,
-        isValid: Boolean(matched),
-      };
-    });
-
-    setRows(newRows);
-    setPasteModalOpen(false);
-    setExcelPasteText('');
-  };
-
-  const handleAddAllToCart = () => {
-    const validRows = rows.filter((r) => r.isValid && r.matchedSku);
-    if (validRows.length === 0) return;
-
-    validRows.forEach((r) => {
-      if (r.matchedSku) {
-        addToCart(r.matchedSku, r.quantity);
-      }
-    });
-
-    router.push('/portal/cart');
-  };
-
-  const totalValidItems = rows.filter((r) => r.isValid).length;
-  const totalTyres = rows
-    .filter((r) => r.isValid)
-    .reduce((acc, curr) => acc + curr.quantity, 0);
+export default function QuickOrderPage() {
+  const { addToCart } = useApp();
+  const [input, setInput] = useState('');
+  const [added, setAdded] = useState(0);
+  const lines = useMemo(() => parse(input), [input]);
+  const matched = lines.filter((l) => l.sku);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white border border-[#DEE2E6] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-amber-100 text-amber-800 text-xs font-condensed font-bold uppercase tracking-wider mb-2">
-            <Zap className="w-3.5 h-3.5" />
-            <span>High-Speed SKU Matrix</span>
-          </div>
+    <div className="mx-auto max-w-2xl">
+      <h1 className="text-center text-4xl font-semibold">Quick order</h1>
+      <p className="mb-8 mt-1 text-center text-lg text-muted">Type or paste one tyre per line: size or code, then how many.</p>
 
-          <h1 className="font-condensed font-black text-2xl sm:text-3xl text-[#1C1F22] uppercase">
-            RAPID ORDER FORM (SKU-WISE)
-          </h1>
-          <p className="text-xs text-[#6C757D] mt-1 max-w-xl">
-            Type or paste part numbers and tyre sizes directly from workshop spreadsheets. Instant verification against live Queensland warehouse stock.
-          </p>
-        </div>
+      <label htmlFor="quick-order" className="sr-only">
+        Tyres and quantities
+      </label>
+      <textarea
+        id="quick-order"
+        rows={6}
+        value={input}
+        onChange={(e) => {
+          setInput(e.target.value);
+          setAdded(0);
+        }}
+        placeholder={'11R22.5 BD175, 8\n295/80R22.5 RAC44, 4'}
+        className={`${inputClass} font-mono text-[15px]`}
+      />
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setPasteModalOpen(true)}
-            className="bg-[#F8F9FA] hover:bg-[#E9ECEF] border border-[#CED4DA] text-[#1C1F22] px-4 py-2.5 rounded-lg text-xs font-condensed font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-            <span>Paste from Excel / CSV</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Grid of Rows */}
-      <div className="bg-white border border-[#DEE2E6] rounded-2xl p-6 shadow-sm space-y-4">
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
-            <thead className="bg-[#1C1F22] text-[#CED4DA] font-condensed font-bold uppercase">
-              <tr>
-                <th className="py-2.5 px-4 w-12 text-center">#</th>
-                <th className="py-2.5 px-4">Size or Pattern / SKU</th>
-                <th className="py-2.5 px-4">Matched Commercial Tyre</th>
-                <th className="py-2.5 px-4 w-32 text-center">Quantity</th>
-                <th className="py-2.5 px-4">Stock Status</th>
-                <th className="py-2.5 px-4 w-16 text-center">Remove</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E9ECEF]">
-              {rows.map((row, index) => (
-                <tr key={row.id} className="hover:bg-[#F8F9FA] transition">
-                  <td className="py-3 px-4 text-center font-mono font-bold text-[#868E96]">
-                    {index + 1}
-                  </td>
-
-                  {/* Input Size / SKU */}
-                  <td className="py-3 px-4">
-                    <input
-                      type="text"
-                      placeholder="e.g. 11R22.5, RDC55..."
-                      value={row.sizeOrSku}
-                      onChange={(e) => handleRowChange(row.id, 'sizeOrSku', e.target.value)}
-                      className={`w-full bg-[#F8F9FA] border rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#1C1F22] focus:outline-none ${
-                        row.sizeOrSku && !row.isValid
-                          ? 'border-red-500 bg-red-50'
-                          : row.isValid
-                          ? 'border-emerald-500 bg-emerald-50/20'
-                          : 'border-[#CED4DA]'
-                      }`}
-                    />
-                  </td>
-
-                  {/* Matched Specs */}
-                  <td className="py-3 px-4">
-                    {row.isValid && row.matchedSku ? (
-                      <div>
-                        <div className="font-condensed font-bold text-[#1C1F22] text-sm">
-                          {row.matchedSku.brandName} &bull; {row.matchedSku.patternCode}
-                        </div>
-                        <div className="text-[11px] text-[#6C757D] font-mono">
-                          {row.matchedSku.fullSizeCode} ({row.matchedSku.axlePosition} axle)
-                        </div>
-                      </div>
-                    ) : row.sizeOrSku ? (
-                      <span className="text-red-600 font-bold flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>Unknown size code</span>
-                      </span>
-                    ) : (
-                      <span className="text-[#ADB5BD] italic">Enter size to verify</span>
-                    )}
-                  </td>
-
-                  {/* Quantity Input */}
-                  <td className="py-3 px-4 text-center">
-                    <div className="flex items-center justify-center bg-[#F8F9FA] border border-[#CED4DA] rounded-lg w-28 mx-auto">
-                      <button
-                        onClick={() =>
-                          handleRowChange(row.id, 'quantity', Math.max(1, row.quantity - 2))
-                        }
-                        className="w-8 h-8 flex items-center justify-center font-bold text-sm text-[#495057]"
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        min="1"
-                        value={row.quantity}
-                        onChange={(e) =>
-                          handleRowChange(row.id, 'quantity', parseInt(e.target.value) || 1)
-                        }
-                        className="w-12 text-center font-mono font-bold text-xs bg-transparent focus:outline-none"
-                      />
-                      <button
-                        onClick={() => handleRowChange(row.id, 'quantity', row.quantity + 2)}
-                        className="w-8 h-8 flex items-center justify-center font-bold text-sm text-[#495057]"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </td>
-
-                  {/* Stock Status */}
-                  <td className="py-3 px-4">
-                    {row.isValid && row.matchedSku ? (
-                      <div className="text-xs font-mono">
-                        <span className="text-emerald-700 font-bold flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>In Stock</span>
-                        </span>
-                        <span className="text-[10px] text-[#6C757D]">
-                          Rocklea: {row.matchedSku.inStockBranches.rocklea} &bull; Yatala: {row.matchedSku.inStockBranches.yatala}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-[#ADB5BD]">-</span>
-                    )}
-                  </td>
-
-                  {/* Delete */}
-                  <td className="py-3 px-4 text-center">
-                    <button
-                      onClick={() => removeRow(row.id)}
-                      className="text-[#868E96] hover:text-red-600 p-1.5 rounded transition"
-                      title="Remove row"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Add Row Button */}
-        <div className="pt-2 flex items-center justify-between">
-          <button
-            onClick={addRow}
-            className="text-xs font-condensed font-bold uppercase tracking-wider text-[#1C1F22] hover:text-[#D50000] flex items-center gap-1.5 py-2 px-3 rounded hover:bg-[#F8F9FA] transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Row</span>
-          </button>
-
-          <div className="text-xs text-[#6C757D] font-mono">
-            {totalValidItems} valid lines ({totalTyres} tyres)
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Sticky Action Bar */}
-      <div className="bg-[#1C1F22] text-white rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <div className="text-xs text-amber-400 font-condensed font-bold uppercase">
-            Ready to Transfer to Request-For-Pricing Cart
-          </div>
-          <div className="font-condensed font-black text-2xl text-white">
-            {totalTyres} Commercial Tyres Across {totalValidItems} SKUs
-          </div>
-          <p className="text-xs text-[#868E96]">
-            No prices shown &bull; Tier {session?.tier || 'A'} wholesale quantity discount applied upon submission
-          </p>
-        </div>
-
-        <button
-          onClick={handleAddAllToCart}
-          disabled={totalValidItems === 0}
-          className="bg-[#D50000] hover:bg-[#B30000] disabled:opacity-50 text-white px-8 py-3.5 rounded-xl font-condensed font-bold text-base uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-red-950"
-        >
-          <ShoppingCart className="w-5 h-5" />
-          <span>Add All {totalTyres} Tyres to RFQ Cart &rarr;</span>
-        </button>
-      </div>
-
-      {/* Paste from Excel Modal */}
-      {pasteModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
-            <h3 className="font-condensed font-black text-xl text-[#1C1F22] uppercase mb-1">
-              Paste Tyre List from Spreadsheet
-            </h3>
-            <p className="text-xs text-[#6C757D] mb-4">
-              Copy two columns from Excel (Size or Pattern + Quantity) and paste below:
-            </p>
-
-            <textarea
-              rows={6}
-              placeholder="11R22.5	8&#10;295/80R22.5	4&#10;385/65R22.5	4"
-              value={excelPasteText}
-              onChange={(e) => setExcelPasteText(e.target.value)}
-              className="w-full bg-[#F8F9FA] border border-[#CED4DA] rounded-lg p-3 text-xs font-mono text-[#1C1F22] focus:border-[#D50000] focus:outline-none"
-            />
-
-            <div className="mt-4 flex items-center justify-end gap-3">
-              <button
-                onClick={() => setPasteModalOpen(false)}
-                className="px-4 py-2 text-xs font-condensed font-bold uppercase text-[#6C757D]"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleParseExcel}
-                className="bg-[#D50000] hover:bg-[#B30000] text-white px-5 py-2 rounded-lg text-xs font-condensed font-bold uppercase tracking-wider transition"
-              >
-                Populate Order Grid
-              </button>
-            </div>
-          </div>
-        </div>
+      {lines.length > 0 && (
+        <ul className="mt-6 divide-y divide-line overflow-hidden rounded-3xl bg-panel">
+          {lines.map((l, i) => (
+            <li key={i} className="flex items-center justify-between gap-4 px-6 py-4">
+              <div className="min-w-0">
+                {l.sku ? (
+                  <>
+                    <p className="font-semibold">
+                      {l.sku.brandName} {l.sku.patternCode} · {l.sku.size}
+                    </p>
+                    <p className="text-[14px] text-muted">{POSITION_LABEL[l.sku.axlePosition]}</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-semibold">“{l.text}”</p>
+                    <p className="text-[14px] text-brand">Couldn&apos;t find that one. Check the size or code.</p>
+                  </>
+                )}
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="tabular-nums text-muted">× {l.qty}</span>
+                {l.sku ? <Check className="h-5 w-5 text-ok" aria-label="Found" /> : <X className="h-5 w-5 text-brand" aria-label="Not found" />}
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
+
+      <div className="mt-6 flex flex-wrap items-center gap-4">
+        <Button
+          type="button"
+          disabled={matched.length === 0}
+          onClick={() => {
+            matched.forEach((l) => l.sku && addToCart(l.sku, l.qty));
+            setAdded(matched.length);
+            setInput('');
+          }}
+        >
+          Add {matched.length > 0 ? matched.length : ''} to cart
+        </Button>
+        {added > 0 && (
+          <p className="text-[15px] text-ok" role="status">
+            Added. <Link href="/portal/cart" className="font-medium underline">Go to cart</Link>
+          </p>
+        )}
+      </div>
     </div>
   );
 }

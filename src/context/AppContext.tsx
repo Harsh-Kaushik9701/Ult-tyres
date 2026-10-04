@@ -240,7 +240,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!session?.dealerId || !session.dealerName) {
       throw new Error('Sign in with a dealer account to submit a pricing request.');
     }
-    const quoteNum = `RFQ-${Math.floor(1000 + Math.random() * 9000)}`;
+    const quoteNum = `Q-${Math.floor(1000 + Math.random() * 9000)}`;
     const newRfq: PricingRequest = {
       id: `rfq-${Date.now()}`,
       quoteNumber: quoteNum,

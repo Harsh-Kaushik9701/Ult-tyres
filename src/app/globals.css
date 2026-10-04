@@ -1,78 +1,55 @@
 @import "tailwindcss";
 
+/*
+ * Ultimate Tyres design tokens.
+ * Direction: calm and simple (Apple-style). White and soft grey surfaces,
+ * near-black type, charcoal tiles for contrast, High-Vis Red used sparingly
+ * for actions only.
+ */
+@theme {
+  --color-ink: #1d1d1f;
+  --color-muted: #6e6e73;
+  --color-line: #d2d2d7;
+  --color-panel: #f5f5f7;
+  --color-charcoal: #1c1f22;
+  --color-charcoal-soft: #2a2e33;
+  --color-brand: #d50000;
+  --color-brand-dark: #b00000;
+  --color-brand-light: #ff453a;
+  --color-ok: #1e7a3e;
+  --color-warn: #a05a00;
+
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 @layer base {
-  :root {
-    --color-charcoal-950: #121416;
-    --color-charcoal-900: #1C1F22;
-    --color-charcoal-800: #25292E;
-    --color-charcoal-700: #343A40;
-    --color-charcoal-600: #495057;
-    --color-charcoal-500: #6C757D;
-    --color-steel-400: #ADB5BD;
-    --color-steel-300: #CED4DA;
-    --color-steel-200: #DEE2E6;
-    --color-steel-100: #E9ECEF;
-    --color-steel-50: #F8F9FA;
-    --color-red-700: #B30000;
-    --color-red-600: #D50000;
-    --color-red-500: #E61A1A;
-    --color-red-400: #FF3B30;
-    --color-amber-500: #F59E0B;
-    --color-green-500: #10B981;
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: #ffffff;
+    color: var(--color-ink);
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-/* Custom Tread Background Utility */
-.bg-tread-pattern {
-  background-color: #1C1F22;
-  background-image: radial-gradient(rgba(213, 0, 0, 0.08) 1px, transparent 0),
-    linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.02) 75%, rgba(255, 255, 255, 0.02)),
-    linear-gradient(45deg, rgba(255, 255, 255, 0.02) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.02) 75%, rgba(255, 255, 255, 0.02));
-  background-size: 32px 32px, 16px 16px, 16px 16px;
-  background-position: 0 0, 0 0, 8px 8px;
-}
-
-.bg-tread-dark {
-  background-color: #121416;
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
-    linear-gradient(225deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
-    linear-gradient(315deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
-    linear-gradient(45deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%);
-  background-size: 20px 20px;
-}
-
-.font-condensed {
-  font-family: var(--font-barlow-condensed), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  letter-spacing: 0.02em;
-}
-
-.font-body {
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* Tabular numbers for engineering specs */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #1C1F22;
-}
-::-webkit-scrollbar-thumb {
-  background: #343A40;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #495057;
-}
-
-/* Focus styles for WCAG 2.2 */
-:focus-visible {
-  outline: 2px solid #D50000;
-  outline-offset: 2px;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
