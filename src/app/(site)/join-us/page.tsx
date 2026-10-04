@@ -15,7 +15,7 @@ export default function JoinUsPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <Tile dark className="px-8 py-14 text-center">
               <h2 className="text-4xl font-semibold">Become a dealer</h2>
-              <p className="mt-2 text-lg text-white/70">Trade pricing on Ralson, Blacklion and Triangle.</p>
+              <p className="mt-2 text-lg text-on-dark">Trade pricing on Ralson, Blacklion and Triangle.</p>
               <ChevronLink href="/join-us/become-a-dealer" tone="light" className="mt-4">
                 Apply now
               </ChevronLink>

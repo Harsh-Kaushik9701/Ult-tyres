@@ -13,7 +13,7 @@ function Logo() {
       <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-[13px] font-bold text-white">
         UT
       </span>
-      <span className="text-[15px] font-semibold tracking-tight text-ink">Ultimate Tyres</span>
+      <span className="font-display text-[18px] font-bold uppercase tracking-wide text-ink">Ultimate Tyres</span>
     </Link>
   );
 }

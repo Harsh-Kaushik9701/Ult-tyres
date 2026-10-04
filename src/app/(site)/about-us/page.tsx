@@ -52,7 +52,7 @@ export default function AboutPage() {
         <Container>
           <Tile dark className="px-8 py-14 text-center">
             <h2 className="text-3xl font-semibold sm:text-4xl">Come and see us</h2>
-            <p className="mt-2 text-lg text-white/70">{BRANCHES.map((b) => b.suburb).join(' · ')}</p>
+            <p className="mt-2 text-lg text-on-dark">{BRANCHES.map((b) => b.suburb).join(' · ')}</p>
             <div className="mt-6 flex flex-wrap justify-center gap-6">
               <ButtonLink href="/network-map">Find a branch</ButtonLink>
               <ChevronLink href="/join-us/careers" tone="light" className="self-center">

@@ -131,7 +131,7 @@ export default function QuoteDetailPage() {
                 key={i}
                 className={`max-w-[85%] rounded-2xl px-4 py-3 ${m.role === 'staff' ? 'bg-panel' : 'ml-auto bg-ink text-white'}`}
               >
-                <p className={`text-[13px] ${m.role === 'staff' ? 'text-muted' : 'text-white/60'}`}>{m.sender}</p>
+                <p className={`text-[13px] ${m.role === 'staff' ? 'text-muted' : 'text-on-dark'}`}>{m.sender}</p>
                 <p className="mt-0.5">{m.message}</p>
               </li>
             ))}

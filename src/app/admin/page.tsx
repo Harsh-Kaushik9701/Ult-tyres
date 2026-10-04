@@ -94,7 +94,7 @@ export default function AdminPage() {
         <div className="mx-auto flex h-14 max-w-[1080px] items-center justify-between px-5">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-ink text-[13px] font-bold text-white">UT</span>
-            <span className="text-[15px] font-semibold">Admin</span>
+            <span className="font-display text-[18px] font-bold uppercase tracking-wide">Admin</span>
           </div>
           <Link href="/" className="text-[13px] text-ink/75 hover:text-ink">
             Main website

@@ -79,7 +79,7 @@ export default function WheelAlignmentPage() {
                   {i + 1}
                 </span>
                 <h3 className="mt-4 text-xl font-semibold">{s.title}</h3>
-                <p className="mt-1 text-white/70">{s.text}</p>
+                <p className="mt-1 text-on-dark">{s.text}</p>
               </li>
             ))}
           </ol>

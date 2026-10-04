@@ -45,7 +45,7 @@ export default function NetworkMapPage() {
                       }`}
                     >
                       <span className="text-xl font-semibold">{b.suburb}</span>
-                      <span className={`mt-1 block ${active ? 'text-white/70' : 'text-muted'}`}>
+                      <span className={`mt-1 block ${active ? 'text-on-dark' : 'text-muted'}`}>
                         {b.address}, {b.suburb} {b.state} {b.postcode}
                       </span>
                     </button>
@@ -68,14 +68,14 @@ export default function NetworkMapPage() {
             <div className="overflow-hidden rounded-3xl bg-panel">
               <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="Map of our branches in South East Queensland">
                 {Array.from({ length: 9 }, (_, i) => (
-                  <line key={`v${i}`} x1={(i * W) / 8} x2={(i * W) / 8} y1="0" y2={H} stroke="#e5e5ea" />
+                  <line key={`v${i}`} x1={(i * W) / 8} x2={(i * W) / 8} y1="0" y2={H} stroke="#CED4DA" strokeOpacity="0.6" />
                 ))}
                 {Array.from({ length: 11 }, (_, i) => (
-                  <line key={`h${i}`} y1={(i * H) / 10} y2={(i * H) / 10} x1="0" x2={W} stroke="#e5e5ea" />
+                  <line key={`h${i}`} y1={(i * H) / 10} y2={(i * H) / 10} x1="0" x2={W} stroke="#CED4DA" strokeOpacity="0.6" />
                 ))}
                 <g>
-                  <circle cx={x(CBD.lng)} cy={y(CBD.lat)} r="5" fill="#6e6e73" />
-                  <text x={x(CBD.lng) + 10} y={y(CBD.lat) + 5} fontSize="15" fill="#6e6e73">
+                  <circle cx={x(CBD.lng)} cy={y(CBD.lat)} r="5" fill="#5C636A" />
+                  <text x={x(CBD.lng) + 10} y={y(CBD.lat) + 5} fontSize="15" fill="#5C636A">
                     Brisbane CBD
                   </text>
                 </g>
@@ -85,14 +85,14 @@ export default function NetworkMapPage() {
                   const cy = y(b.coordinates.lat);
                   return (
                     <g key={b.id} onClick={() => setSelected(b.id)} className="cursor-pointer">
-                      <circle cx={cx} cy={cy} r={active ? 22 : 16} fill="#d50000" opacity={active ? 0.15 : 0.1} />
-                      <circle cx={cx} cy={cy} r={active ? 10 : 8} fill={active ? '#d50000' : '#1d1d1f'} />
+                      <circle cx={cx} cy={cy} r={active ? 22 : 16} fill="#D50000" opacity={active ? 0.15 : 0.1} />
+                      <circle cx={cx} cy={cy} r={active ? 10 : 8} fill={active ? '#D50000' : '#1C1F22'} />
                       <text
                         x={cx + 18}
                         y={cy + 6}
                         fontSize="18"
                         fontWeight={active ? 600 : 500}
-                        fill="#1d1d1f"
+                        fill="#1C1F22"
                       >
                         {b.suburb}
                       </text>

@@ -59,7 +59,7 @@ export default function HomePage() {
                   {brand.isAuthorisedDistributor ? 'Authorised distributor' : 'In stock'}
                 </p>
                 <h2 className="mt-1 text-4xl font-semibold">{brand.name}</h2>
-                <p className={`mt-2 text-[17px] ${brand.isAuthorisedDistributor ? 'text-white/70' : 'text-muted'}`}>
+                <p className={`mt-2 text-[17px] ${brand.isAuthorisedDistributor ? 'text-on-dark' : 'text-muted'}`}>
                   {brand.tagline}
                 </p>
                 <ChevronLink href={`/tyres/${brand.slug}`} tone={brand.isAuthorisedDistributor ? 'light' : 'brand'} className="mt-4">
@@ -102,7 +102,7 @@ export default function HomePage() {
           <Tile dark className="px-8 py-16 text-center sm:py-20">
             <p className="text-[15px] font-semibold text-brand-light">For dealers</p>
             <h2 className="mt-2 text-4xl font-semibold sm:text-5xl">Trade pricing, made easy.</h2>
-            <p className="mx-auto mt-3 max-w-lg text-lg text-white/70">
+            <p className="mx-auto mt-3 max-w-lg text-lg text-on-dark">
               Add tyres to your cart and send it through. We&apos;ll come back with your price, fast.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -132,7 +132,7 @@ export default function HomePage() {
             <ChevronLink href="/contact">Contact us</ChevronLink>
           </div>
           <p className="mt-10 flex flex-wrap items-center justify-center gap-1.5 text-[15px] text-muted">
-            <span className="flex text-[#f5a623]" aria-hidden>
+            <span className="flex text-amber" aria-hidden>
               {Array.from({ length: 5 }, (_, i) => (
                 <Star key={i} className="h-4 w-4 fill-current" />
               ))}

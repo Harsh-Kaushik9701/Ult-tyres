@@ -9,9 +9,9 @@ export default function TyreGraphic({
   className?: string;
   tone?: 'dark' | 'light';
 }) {
-  const rubber = tone === 'dark' ? '#1d1d1f' : '#3a3f45';
-  const rim = tone === 'dark' ? '#c7c9cc' : '#e5e5ea';
-  const hub = tone === 'dark' ? '#8e9196' : '#aeb2b8';
+  const rubber = tone === 'dark' ? '#1C1F22' : '#343A40'; // charcoal-900 / charcoal-700
+  const rim = tone === 'dark' ? '#CED4DA' : '#F1F3F5'; // charcoal-300 / steel-100
+  const hub = tone === 'dark' ? '#868E96' : '#ADB5BD';
   const lugs = Array.from({ length: 36 }, (_, i) => i * 10);
   const bolts = Array.from({ length: 10 }, (_, i) => i * 36);
 
@@ -36,9 +36,9 @@ export default function TyreGraphic({
       <circle cx="100" cy="100" r="50" fill="none" stroke="#000" strokeOpacity="0.12" strokeWidth="2" />
       <circle cx="100" cy="100" r="24" fill={hub} />
       {bolts.map((deg) => (
-        <circle key={deg} cx="100" cy="84" r="3" fill="#5a5e63" transform={`rotate(${deg} 100 100)`} />
+        <circle key={deg} cx="100" cy="84" r="3" fill="#5C636A" transform={`rotate(${deg} 100 100)`} />
       ))}
-      <circle cx="100" cy="100" r="9" fill="#5a5e63" />
+      <circle cx="100" cy="100" r="9" fill="#5C636A" />
     </svg>
   );
 }

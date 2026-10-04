@@ -1,25 +1,50 @@
 @import "tailwindcss";
 
 /*
- * Ultimate Tyres design tokens.
- * Direction: calm and simple (Apple-style). White and soft grey surfaces,
- * near-black type, charcoal tiles for contrast, High-Vis Red used sparingly
- * for actions only.
+ * Ultimate Tyres design tokens: the blueprint colour system.
+ *
+ *   charcoal-900  #1C1F22  dark sections, header text, body text on light (16.6:1 on white)
+ *   charcoal-700  #343A40  dark surfaces and hover states
+ *   charcoal-500  #5C636A  secondary text (≥ 4.5:1 on white and on steel-100)
+ *   charcoal-300  #CED4DA  borders, and secondary text on charcoal (11:1)
+ *   steel-100     #F1F3F5  light tiles and panels
+ *   red-600       #D50000  High-Vis Red: primary buttons, links, active states on white (5.5:1)
+ *   red-400       #FF3B30  red text and icons on charcoal (4.7:1). Never use red-600 for small text on charcoal.
+ *   white         #FFFFFF  light sections, text on charcoal
+ *   amber / green          status only, always with an icon or label
+ *
+ * Type: Barlow Condensed for headlines, Inter for UI and body.
  */
 @theme {
-  --color-ink: #1d1d1f;
-  --color-muted: #6e6e73;
-  --color-line: #d2d2d7;
-  --color-panel: #f5f5f7;
+  /* Blueprint names */
+  --color-charcoal-900: #1c1f22;
+  --color-charcoal-700: #343a40;
+  --color-charcoal-500: #5c636a;
+  --color-charcoal-300: #ced4da;
+  --color-steel-100: #f1f3f5;
+  --color-red-600: #d50000;
+  --color-red-700: #b00000;
+  --color-red-400: #ff3b30;
+  --color-amber: #f59e0b;
+  --color-green: #1e7a3e;
+
+  /* Role names used across components (mapped to the blueprint values) */
+  --color-ink: #1c1f22;
+  --color-muted: #5c636a;
+  --color-line: #ced4da;
+  --color-panel: #f1f3f5;
   --color-charcoal: #1c1f22;
-  --color-charcoal-soft: #2a2e33;
+  --color-charcoal-soft: #343a40;
+  --color-on-dark: #ced4da;
   --color-brand: #d50000;
   --color-brand-dark: #b00000;
-  --color-brand-light: #ff453a;
+  --color-brand-light: #ff3b30;
   --color-ok: #1e7a3e;
-  --color-warn: #a05a00;
+  --color-ok-soft: #e3f2e8;
+  --color-warn: #9a5b00;
 
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-barlow-condensed), "Arial Narrow", var(--font-inter), sans-serif;
 }
 
 @layer base {
@@ -32,8 +57,10 @@
     color: var(--color-ink);
   }
   h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.005em;
     text-wrap: balance;
-    letter-spacing: -0.02em;
   }
   :focus-visible {
     outline: 2px solid var(--color-brand);

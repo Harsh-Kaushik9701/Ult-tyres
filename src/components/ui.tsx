@@ -90,7 +90,7 @@ export function PageHero({
         )}
         <h1 className="mx-auto max-w-3xl text-4xl font-semibold leading-[1.08] sm:text-6xl">{title}</h1>
         {subtitle && (
-          <p className={`mx-auto mt-4 max-w-xl text-lg sm:text-xl ${dark ? 'text-white/70' : 'text-muted'}`}>
+          <p className={`mx-auto mt-4 max-w-xl text-lg sm:text-xl ${dark ? 'text-on-dark' : 'text-muted'}`}>
             {subtitle}
           </p>
         )}

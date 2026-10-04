@@ -46,7 +46,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         <div className="mx-auto flex h-14 max-w-[1080px] items-center justify-between gap-4 px-5">
           <Link href="/portal" className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-[13px] font-bold text-white">UT</span>
-            <span className="text-[15px] font-semibold tracking-tight">Dealer portal</span>
+            <span className="font-display text-[18px] font-bold uppercase tracking-wide">Dealer portal</span>
           </Link>
           <div className="flex items-center gap-4 text-[13px]">
             <span className="hidden text-muted sm:inline">{session?.dealerName}</span>

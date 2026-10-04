@@ -34,7 +34,7 @@ export default function PortalHomePage() {
             <p className="mt-1 text-2xl font-semibold">
               {q.quoteNumber} · {q.total !== undefined ? money(q.total) : ''}
             </p>
-            <p className="mt-1 text-white/70">
+            <p className="mt-1 text-on-dark">
               {q.lines.reduce((n, l) => n + l.quantity, 0)} tyres · {poLabel(q.poNumber)}
             </p>
           </div>

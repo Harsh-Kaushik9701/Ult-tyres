@@ -21,7 +21,7 @@ export const ORDER_STATUS: Record<OrderStatus, { label: string; tone: Tone }> = 
 export const TONE_CLASS: Record<Tone, string> = {
   neutral: 'bg-panel text-ink',
   action: 'bg-brand text-white',
-  good: 'bg-[#e3f3e8] text-ok',
+  good: 'bg-ok-soft text-ok',
   muted: 'bg-panel text-muted',
 };
 

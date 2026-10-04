@@ -18,7 +18,7 @@ export default function TyresPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <Tile dark className="flex flex-col items-center px-8 pb-10 pt-12 text-center">
               <h2 className="text-4xl font-semibold">Truck tyres</h2>
-              <p className="mt-2 text-lg text-white/70">Steer, drive and trailer.</p>
+              <p className="mt-2 text-lg text-on-dark">Steer, drive and trailer.</p>
               <ChevronLink href="/tyres/truck" tone="light" className="mt-4">
                 Shop truck tyres
               </ChevronLink>

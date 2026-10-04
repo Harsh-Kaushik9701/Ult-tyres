@@ -1,7 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Barlow_Condensed, Inter } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
+
+const barlowCondensed = Barlow_Condensed({
+  weight: ["600", "700"],
+  subsets: ["latin"],
+  variable: "--font-barlow-condensed",
+  display: "swap",
+});
 
 const inter = Inter({
   weight: ["400", "500", "600", "700"],
@@ -26,7 +33,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#1C1F22",
 };
 
 export default function RootLayout({
@@ -35,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-AU" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en-AU" className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-ink">
         <AppProvider>{children}</AppProvider>
       </body>
