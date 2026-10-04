@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -26,8 +26,14 @@ import { useApp } from '@/context/AppContext';
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { session, switchRole, cart, pricingRequests } = useApp();
+  const { hydrated, session, switchRole, cart, pricingRequests } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // Only signed-in dealer users (owner, buyer, staff) may use the portal.
+  const isDealerUser = !!session?.dealerId && session.role !== 'admin';
+  useEffect(() => {
+    if (hydrated && !isDealerUser) router.replace('/dealer/login');
+  }, [hydrated, isDealerUser, router]);
 
   // Ready quotes needing dealer action
   const pendingQuotes = pricingRequests.filter(
@@ -56,6 +62,14 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     { label: 'Orders & Dispatch', path: '/portal/orders', icon: Package },
     { label: 'Account & Team', path: '/portal/account', icon: Settings },
   ];
+
+  if (!hydrated || !isDealerUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F6F8] text-[#6C757D] text-sm" role="status">
+        {hydrated ? 'Redirecting to dealer login…' : 'Loading your account…'}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-[#F4F6F8] text-[#1C1F22]">
@@ -96,13 +110,13 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
               Active Trade Account
             </div>
             <div className="font-condensed font-bold text-sm text-white truncate mt-0.5">
-              {session?.dealerName || 'Apex Fleet Logistics Pty Ltd'}
+              {session?.dealerName}
             </div>
             <div className="flex items-center gap-2 mt-1.5 text-[11px] font-mono">
               <span className="bg-[#25292E] text-amber-400 px-1.5 py-0.5 rounded border border-[#343A40]">
-                Tier {session?.tier || 'A'}
+                Tier {session?.tier}
               </span>
-              <span className="text-[#868E96]">{session?.branch || 'Rocklea HQ'}</span>
+              <span className="text-[#868E96]">{session?.branch}</span>
             </div>
           </div>
 
@@ -145,8 +159,8 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-[#25292E] space-y-3">
           <div className="text-xs text-[#868E96]">
-            <div>User: <strong className="text-white">{session?.name || 'Dave Miller'}</strong></div>
-            <div className="capitalize text-[11px]">Role: <span className="text-emerald-400">{session?.role || 'owner'}</span></div>
+            <div>User: <strong className="text-white">{session?.name}</strong></div>
+            <div className="capitalize text-[11px]">Role: <span className="text-emerald-400">{session?.role}</span></div>
           </div>
 
           <div className="pt-2 border-t border-[#25292E] flex items-center justify-between text-xs">

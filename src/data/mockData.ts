@@ -1,4 +1,4 @@
-import { Brand, Pattern, ProductSku, SkuPriceMatrix, Branch, Dealer, PricingRequest, Order, DealerApplication } from '@/types';
+import { Brand, Pattern, ProductSku, Branch, Dealer, PricingRequest, Order, DealerApplication } from '@/types';
 
 export const BRANDS: Brand[] = [
   {
@@ -539,53 +539,6 @@ export const PATTERNS: Pattern[] = [
 ];
 
 // Admin Price Matrix (Quantity Bands per SKU)
-export const PRICE_MATRIX: Record<string, SkuPriceMatrix> = {
-  'ral-rac44-11r225': {
-    skuId: 'ral-rac44-11r225',
-    baseBands: { '1-3': 345, '4-7': 325, '8-19': 305, '20-49': 288, '50+': 275 },
-  },
-  'ral-rac44-29580r225': {
-    skuId: 'ral-rac44-29580r225',
-    baseBands: { '1-3': 385, '4-7': 365, '8-19': 342, '20-49': 320, '50+': 305 },
-  },
-  'ral-rdc55-11r225': {
-    skuId: 'ral-rdc55-11r225',
-    baseBands: { '1-3': 375, '4-7': 355, '8-19': 335, '20-49': 315, '50+': 298 },
-  },
-  'ral-rtc33-38565r225': {
-    skuId: 'ral-rtc33-38565r225',
-    baseBands: { '1-3': 445, '4-7': 420, '8-19': 398, '20-49': 375, '50+': 355 },
-  },
-  'bl-bd175-11r225': {
-    skuId: 'bl-bd175-11r225',
-    baseBands: { '1-3': 360, '4-7': 340, '8-19': 320, '20-49': 300, '50+': 285 },
-  },
-  'bl-bd175-29580r225': {
-    skuId: 'bl-bd175-29580r225',
-    baseBands: { '1-3': 395, '4-7': 375, '8-19': 350, '20-49': 330, '50+': 312 },
-  },
-  'bl-bt165-11r225': {
-    skuId: 'bl-bt165-11r225',
-    baseBands: { '1-3': 330, '4-7': 310, '8-19': 290, '20-49': 275, '50+': 260 },
-  },
-  'tri-trs02-11r225': {
-    skuId: 'tri-trs02-11r225',
-    baseBands: { '1-3': 350, '4-7': 330, '8-19': 310, '20-49': 292, '50+': 278 },
-  },
-  'tri-trs02-29580r225': {
-    skuId: 'tri-trs02-29580r225',
-    baseBands: { '1-3': 390, '4-7': 370, '8-19': 345, '20-49': 325, '50+': 308 },
-  },
-  'tri-tr688-11r225': {
-    skuId: 'tri-tr688-11r225',
-    baseBands: { '1-3': 365, '4-7': 345, '8-19': 325, '20-49': 305, '50+': 290 },
-  },
-  'ral-rcu11-27570r225': {
-    skuId: 'ral-rcu11-27570r225',
-    baseBands: { '1-3': 370, '4-7': 350, '8-19': 330, '20-49': 310, '50+': 295 },
-  },
-};
-
 export const BRANCHES: Branch[] = [
   {
     id: 'rocklea',

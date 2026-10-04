@@ -22,8 +22,11 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
-import { PRICE_MATRIX, SKUS } from '@/data/mockData';
-import { PricingRequest, QuoteLine } from '@/types';
+import { SKUS } from '@/data/mockData';
+import { PricingRequest, SkuPriceMatrix } from '@/types';
+import { getSuggestedPrices, getPriceMatrix } from './actions';
+
+type AdminTab = 'rfqs' | 'applications' | 'matrix' | 'fulfillment';
 
 export default function AdminDeskPage() {
   const {
@@ -36,7 +39,7 @@ export default function AdminDeskPage() {
     adminUpdateOrderStatus,
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'rfqs' | 'applications' | 'matrix' | 'fulfillment'>('rfqs');
+  const [activeTab, setActiveTab] = useState<AdminTab>('rfqs');
 
   // Currently editing quote in modal
   const [editingRfq, setEditingRfq] = useState<PricingRequest | null>(null);
@@ -48,36 +51,43 @@ export default function AdminDeskPage() {
   const [suggestAlternative, setSuggestAlternative] = useState(false);
   const [altSkuId, setAltSkuId] = useState('bl-bd175-11r225');
 
-  // Open Quote Editor and automatically pre-fill suggested quantity-band prices!
-  const handleOpenQuoteEditor = (rfq: PricingRequest) => {
+  // Price matrix is fetched from the server only when staff open the tab.
+  const [priceMatrix, setPriceMatrix] = useState<Record<string, SkuPriceMatrix> | null>(null);
+  const [matrixError, setMatrixError] = useState<string | null>(null);
+
+  const openTab = (tab: AdminTab) => {
+    setActiveTab(tab);
+    if (tab === 'matrix' && !priceMatrix) {
+      getPriceMatrix()
+        .then(setPriceMatrix)
+        .catch(() => setMatrixError('Could not load the price matrix. Check you are signed in as staff.'));
+    }
+  };
+
+  // Open Quote Editor and pre-fill suggested quantity-band prices from the server.
+  const handleOpenQuoteEditor = async (rfq: PricingRequest) => {
     setEditingRfq(rfq);
-
-    // Auto-calculate suggested price per line from internal Price Matrix quantity bands
-    const calculated: Record<string, { unitPrice: number; discount: number }> = {};
-    rfq.lines.forEach((line) => {
-      const matrix = PRICE_MATRIX[line.skuId];
-      let basePrice = 330;
-
-      if (matrix) {
-        if (line.quantity >= 50) basePrice = matrix.baseBands['50+'];
-        else if (line.quantity >= 20) basePrice = matrix.baseBands['20-49'];
-        else if (line.quantity >= 8) basePrice = matrix.baseBands['8-19'];
-        else if (line.quantity >= 4) basePrice = matrix.baseBands['4-7'];
-        else basePrice = matrix.baseBands['1-3'];
-      }
-
-      calculated[line.skuId] = {
-        unitPrice: line.unitPrice || basePrice,
-        discount: line.discountPercent || 0,
-      };
-    });
-
-    setLinePrices(calculated);
     setFreightAmount(rfq.freight || 80);
     setStaffNotes(
       rfq.pricingStaffNotes ||
         'Priced with Tier wholesale discount. Stock reserved at Rocklea Central Hub for immediate dispatch.'
     );
+
+    let suggested: Record<string, number> = {};
+    try {
+      suggested = await getSuggestedPrices(rfq.lines.map((l) => ({ skuId: l.skuId, quantity: l.quantity })));
+    } catch {
+      // Leave lines blank for manual pricing if the matrix is unavailable.
+    }
+
+    const calculated: Record<string, { unitPrice: number; discount: number }> = {};
+    rfq.lines.forEach((line) => {
+      calculated[line.skuId] = {
+        unitPrice: line.unitPrice || suggested[line.skuId] || 0,
+        discount: line.discountPercent || 0,
+      };
+    });
+    setLinePrices(calculated);
   };
 
   const handleSendQuote = (e: React.FormEvent) => {
@@ -177,7 +187,7 @@ export default function AdminDeskPage() {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => openTab(tab.id as AdminTab)}
                 className={`px-4 py-2.5 rounded-lg text-xs font-condensed font-bold uppercase tracking-wider transition flex items-center gap-2 whitespace-nowrap ${
                   active
                     ? 'bg-[#D50000] text-white shadow'
@@ -461,7 +471,17 @@ export default function AdminDeskPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#25292E] font-mono text-white">
-                  {Object.entries(PRICE_MATRIX).map(([skuId, item]) => {
+                  {matrixError && (
+                    <tr>
+                      <td colSpan={6} className="py-4 px-4 text-amber-400 font-sans">{matrixError}</td>
+                    </tr>
+                  )}
+                  {!priceMatrix && !matrixError && (
+                    <tr>
+                      <td colSpan={6} className="py-4 px-4 text-[#868E96] font-sans">Loading price matrix…</td>
+                    </tr>
+                  )}
+                  {Object.entries(priceMatrix ?? {}).map(([skuId, item]) => {
                     const matchedSku = SKUS.find((s) => s.id === skuId);
                     return (
                       <tr key={skuId} className="hover:bg-[#25292E]">

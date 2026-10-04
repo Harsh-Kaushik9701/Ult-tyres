@@ -23,7 +23,7 @@ export default function CartPage() {
   const router = useRouter();
   const { session, cart, updateCartQuantity, removeFromCart, clearCart, submitPricingRequest } = useApp();
 
-  const [poNumber, setPoNumber] = useState(`PO-${Date.now().toString().slice(-5)}`);
+  const [poNumber, setPoNumber] = useState('');
   const [requiredByDate, setRequiredByDate] = useState('2026-10-09');
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
   const [pickupBranch, setPickupBranch] = useState('Rocklea Central HQ');

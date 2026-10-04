@@ -23,6 +23,7 @@ import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton';
 import AxlePositionDiagram from '@/components/AxlePositionDiagram';
 import { SKUS, PATTERNS, BRANDS } from '@/data/mockData';
 import { useApp } from '@/context/AppContext';
+import { availabilityBand, totalStock, AVAILABILITY_LABEL, AVAILABILITY_CLASS } from '@/lib/availability';
 import { AxlePosition, TyreApplication, ProductSku } from '@/types';
 
 function TruckTyresContent() {
@@ -197,10 +198,7 @@ function TruckTyresContent() {
               {filteredSkus.map((sku) => {
                 const pattern = getPatternForSku(sku.patternId);
                 const currentQty = quantities[sku.id] || 4;
-                const totalStock =
-                  sku.inStockBranches.rocklea +
-                  sku.inStockBranches.yatala +
-                  sku.inStockBranches.baldhills;
+                const band = availabilityBand(totalStock(sku));
 
                 return (
                   <div
@@ -271,39 +269,16 @@ function TruckTyresContent() {
                           </div>
                         </div>
 
-                        {/* Branch Availability Bands (Visible to Logged-in or Highlighted) */}
+                        {/* Availability band only; exact counts are never shown publicly */}
                         <div className="mt-4 pt-3 border-t border-[#25292E]">
-                          <div className="flex items-center justify-between text-xs mb-1.5">
+                          <div className="flex items-center justify-between text-xs">
                             <span className="text-[#868E96] font-medium flex items-center gap-1">
                               <MapPin className="w-3.5 h-3.5 text-[#D50000]" />
-                              <span>Brisbane Stock Bands:</span>
+                              <span>Brisbane availability:</span>
                             </span>
-                            {session ? (
-                              <span className="text-emerald-400 font-bold text-[11px]">
-                                In Stock ({totalStock} units available)
-                              </span>
-                            ) : (
-                              <span className="text-emerald-400 font-bold text-[11px]">
-                                In Stock (Available for Delivery)
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="grid grid-cols-3 gap-1 text-[10px] text-center font-mono">
-                            <div className="bg-[#25292E] p-1 rounded text-[#CED4DA]">
-                              Rocklea: <strong className="text-white">{session ? sku.inStockBranches.rocklea : 'In Stock'}</strong>
-                            </div>
-                            <div className="bg-[#25292E] p-1 rounded text-[#CED4DA]">
-                              Yatala: <strong className="text-white">{session ? sku.inStockBranches.yatala : 'In Stock'}</strong>
-                            </div>
-                            <div className="bg-[#25292E] p-1 rounded text-[#CED4DA]">
-                              Bald Hills: <strong className="text-white">{session ? sku.inStockBranches.baldhills : 'In Stock'}</strong>
-                            </div>
-                          </div>
-
-                          <div className="mt-2 text-[10px] text-[#868E96] flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-amber-400" />
-                            <span>Next inbound shipment: +{sku.incomingQty} on {sku.incomingEta}</span>
+                            <span className={`font-bold text-[11px] ${AVAILABILITY_CLASS[band]}`}>
+                              {AVAILABILITY_LABEL[band]}
+                            </span>
                           </div>
                         </div>
                       </div>

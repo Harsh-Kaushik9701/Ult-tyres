@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Phone, MessageSquare, UserCheck, Shield, ChevronDown, Check, X, Bell } from 'lucide-react';
-import { useApp } from '@/context/AppContext';
+import { useApp, DEMO_MODE } from '@/context/AppContext';
 
 export default function TopUtilityRibbon() {
   const { session, switchRole, recentNotification, clearNotification, cart, pricingRequests } = useApp();
@@ -70,7 +70,8 @@ export default function TopUtilityRibbon() {
 
           {/* Right: Demo Role Switcher & Dealer Access */}
           <div className="flex items-center gap-3 ml-auto">
-            {/* Interactive Role Switcher for Seamless Assessment */}
+            {/* Demo persona switcher: only when NEXT_PUBLIC_DEMO_MODE=true (never on the live site) */}
+            {DEMO_MODE && (
             <div className="relative">
               <button
                 onClick={() => setRoleMenuOpen(!roleMenuOpen)}
@@ -136,6 +137,7 @@ export default function TopUtilityRibbon() {
                 </div>
               )}
             </div>
+            )}
 
             {/* Dealer Portal Links */}
             {session && session.role !== 'admin' ? (

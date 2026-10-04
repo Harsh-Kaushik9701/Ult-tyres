@@ -51,13 +51,13 @@ export default function RapidOrderPage() {
     });
   };
 
-  const handleRowChange = (id: string, field: 'sizeOrSku' | 'quantity', val: any) => {
+  const handleRowChange = (id: string, field: 'sizeOrSku' | 'quantity', val: string | number) => {
     setRows((prev) =>
       prev.map((row) => {
         if (row.id !== id) return row;
         const updated = { ...row, [field]: val };
         if (field === 'sizeOrSku') {
-          const matched = matchSku(val);
+          const matched = matchSku(String(val));
           updated.matchedSku = matched;
           updated.isValid = Boolean(matched);
         }

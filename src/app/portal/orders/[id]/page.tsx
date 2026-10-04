@@ -23,9 +23,15 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const orderId = params?.id as string;
 
-  const { orders, dealerReorder } = useApp();
-  const order = orders.find((o) => o.id === orderId);
+  const { hydrated, session, orders, dealerReorder } = useApp();
 
+  // Wait for saved orders to load, otherwise a refresh on a new order shows "not found".
+  if (!hydrated) {
+    return <div className="py-16 text-center text-sm text-[#6C757D]" role="status">Loading order…</div>;
+  }
+
+  // A dealer may only open their own orders; anything else is treated as not found.
+  const order = orders.find((o) => o.id === orderId && o.dealerId === session?.dealerId);
   if (!order) return notFound();
 
   const handleReorder = () => {

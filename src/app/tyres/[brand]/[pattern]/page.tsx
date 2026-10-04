@@ -25,6 +25,7 @@ import TyreSizeExplainer from '@/components/TyreSizeExplainer';
 import { PATTERNS, BRANDS, SKUS } from '@/data/mockData';
 import { useApp } from '@/context/AppContext';
 import { ProductSku } from '@/types';
+import { availabilityBand, totalStock, AVAILABILITY_LABEL, AVAILABILITY_CLASS } from '@/lib/availability';
 
 export default function PatternDetailPage() {
   const params = useParams();
@@ -39,17 +40,14 @@ export default function PatternDetailPage() {
       (p.code.toLowerCase() === patternParam || p.id.toLowerCase() === patternParam)
   );
 
+  // Hooks must run before any early return.
+  const [selectedSkuId, setSelectedSkuId] = useState<string>(pattern?.skus[0]?.id || '');
+  const [quantity, setQuantity] = useState(4); // default 4
+
   if (!pattern) return notFound();
 
   const brand = BRANDS.find((b) => b.id === pattern.brandId);
-
-  // Selected SKU size in pattern
-  const [selectedSkuId, setSelectedSkuId] = useState<string>(
-    pattern.skus[0]?.id || ''
-  );
   const activeSku = pattern.skus.find((s) => s.id === selectedSkuId) || pattern.skus[0];
-
-  const [quantity, setQuantity] = useState(4); // default 4
 
   // Cross-brand alternatives at same position/size
   const alternatives = SKUS.filter(
@@ -60,11 +58,7 @@ export default function PatternDetailPage() {
       s.size === activeSku?.size
   ).slice(0, 2);
 
-  const totalStock = activeSku
-    ? activeSku.inStockBranches.rocklea +
-      activeSku.inStockBranches.yatala +
-      activeSku.inStockBranches.baldhills
-    : 0;
+  const band = availabilityBand(activeSku ? totalStock(activeSku) : 0);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#121416]">
@@ -177,37 +171,37 @@ export default function PatternDetailPage() {
                 </div>
               </div>
 
-              {/* Branch Availability Bands */}
+              {/* Availability: bands only, never exact counts; branch detail after dealer login */}
               <div className="mt-6 p-4 bg-[#121416] rounded-xl border border-[#2B3036]">
-                <div className="flex items-center justify-between text-xs mb-2">
+                <div className="flex items-center justify-between text-xs">
                   <span className="text-[#868E96] font-medium flex items-center gap-1.5">
                     <MapPin className="w-4 h-4 text-[#D50000]" />
-                    <span>Brisbane Warehouse Availability:</span>
+                    <span>Brisbane availability:</span>
                   </span>
-                  <span className="text-emerald-400 font-bold">
-                    {totalStock > 0 ? `In Stock (${totalStock} units)` : 'Allocated / On Order'}
-                  </span>
+                  <span className={`font-bold ${AVAILABILITY_CLASS[band]}`}>{AVAILABILITY_LABEL[band]}</span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
-                  <div className="bg-[#1C1F22] p-2 rounded border border-[#25292E]">
-                    <div className="text-[10px] text-[#868E96]">Rocklea HQ</div>
-                    <div className="font-bold text-white mt-0.5">{activeSku.inStockBranches.rocklea} in stock</div>
+                {session?.dealerId && activeSku ? (
+                  <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                    {([
+                      ['Rocklea', activeSku.inStockBranches.rocklea],
+                      ['Yatala', activeSku.inStockBranches.yatala],
+                      ['Bald Hills', activeSku.inStockBranches.baldhills],
+                    ] as const).map(([name, units]) => {
+                      const b = availabilityBand(units);
+                      return (
+                        <div key={name} className="bg-[#1C1F22] p-2 rounded border border-[#25292E]">
+                          <div className="text-[10px] text-[#868E96]">{name}</div>
+                          <div className={`font-bold mt-0.5 ${AVAILABILITY_CLASS[b]}`}>{AVAILABILITY_LABEL[b]}</div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="bg-[#1C1F22] p-2 rounded border border-[#25292E]">
-                    <div className="text-[10px] text-[#868E96]">Yatala Depot</div>
-                    <div className="font-bold text-white mt-0.5">{activeSku.inStockBranches.yatala} in stock</div>
+                ) : (
+                  <div className="mt-2 text-[11px] text-[#868E96]">
+                    <Link href="/dealer/login" className="text-white underline hover:text-[#FF3B30]">Dealer login</Link> to see availability by branch.
                   </div>
-                  <div className="bg-[#1C1F22] p-2 rounded border border-[#25292E]">
-                    <div className="text-[10px] text-[#868E96]">Bald Hills</div>
-                    <div className="font-bold text-white mt-0.5">{activeSku.inStockBranches.baldhills} in stock</div>
-                  </div>
-                </div>
-
-                <div className="mt-2.5 text-[11px] text-[#868E96] flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Incoming replenishment: +{activeSku.incomingQty} arriving {activeSku.incomingEta}</span>
-                </div>
+                )}
               </div>
 
               {/* Quantity Stepper & Add to RFQ Cart */}

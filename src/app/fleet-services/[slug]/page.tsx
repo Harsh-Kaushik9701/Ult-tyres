@@ -25,9 +25,9 @@ export default function GenericFleetServicePage() {
   const slug = (params?.slug as string)?.toLowerCase();
 
   const service = FLEET_SERVICES.find((s) => s.slug === slug);
-  if (!service) return notFound();
-
   const [submitted, setSubmitted] = useState(false);
+
+  if (!service) return notFound();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#121416]">
