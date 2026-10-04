@@ -354,9 +354,57 @@ export const SKUS: ProductSku[] = [
   },
 ];
 
+
+/**
+ * The real Ralson range, from the client's IMAGES folder (Google Drive).
+ * Positions come from the code letters (A all position, D drive, T trailer, M mixed, U urban bus).
+ * TODO(client): confirm positions and supply sizes/specs; staff add sizes in Admin › Tyres.
+ */
+function ralson(code: string, category: Pattern['category'], positions: Pattern['positions'], applications: Pattern['applications']): Pattern {
+  return {
+    id: `ralson-${code.toLowerCase()}`,
+    brandId: 'ralson',
+    brandName: 'Ralson',
+    code,
+    name: `Ralson ${code}`,
+    category,
+    positions,
+    applications,
+    features: [],
+    description: '',
+    treadDepthMm: 0,
+    plyRating: '',
+    heroImage: '',
+    treadImage: '',
+    datasheetPdf: '',
+    skus: [],
+  };
+}
+
+const RALSON_RANGE: Pattern[] = [
+  ralson('RAC52', 'truck', ['all-position'], ['regional', 'long-haul']),
+  ralson('RAC55', 'truck', ['all-position'], ['regional', 'long-haul']),
+  ralson('RAC82', 'truck', ['all-position'], ['regional', 'long-haul']),
+  ralson('RAU51', 'bus', ['all-position'], ['urban']),
+  ralson('RDC56', 'truck', ['drive'], ['regional', 'long-haul']),
+  ralson('RDC66', 'truck', ['drive'], ['regional', 'long-haul']),
+  ralson('RDR52', 'truck', ['drive'], ['regional', 'long-haul']),
+  ralson('RDR55', 'truck', ['drive'], ['regional', 'long-haul']),
+  ralson('RDR65', 'truck', ['drive'], ['regional', 'long-haul']),
+  ralson('RDR75', 'truck', ['drive'], ['regional', 'long-haul']),
+  ralson('RDR95', 'truck', ['drive'], ['regional', 'long-haul']),
+  ralson('RMR51', 'truck', ['all-position'], ['mixed', 'on-off-road']),
+  ralson('RMR61', 'truck', ['all-position'], ['mixed', 'on-off-road']),
+  ralson('RTR51', 'truck', ['trailer'], ['regional', 'long-haul']),
+  ralson('RTR61', 'truck', ['trailer'], ['regional', 'long-haul']),
+  ralson('RTR71', 'truck', ['trailer'], ['regional', 'long-haul']),
+];
+
 export const PATTERNS: Pattern[] = [
+  ...RALSON_RANGE,
   {
     id: 'ralson-rac44',
+    active: false, // early placeholder, replaced by RALSON_RANGE
     brandId: 'ralson',
     brandName: 'Ralson',
     code: 'RAC44',
@@ -380,6 +428,7 @@ export const PATTERNS: Pattern[] = [
   },
   {
     id: 'ralson-rdc55',
+    active: false, // early placeholder, replaced by RALSON_RANGE
     brandId: 'ralson',
     brandName: 'Ralson',
     code: 'RDC55',
@@ -403,6 +452,7 @@ export const PATTERNS: Pattern[] = [
   },
   {
     id: 'ralson-rtc33',
+    active: false, // early placeholder, replaced by RALSON_RANGE
     brandId: 'ralson',
     brandName: 'Ralson',
     code: 'RTC33',
@@ -515,6 +565,7 @@ export const PATTERNS: Pattern[] = [
   },
   {
     id: 'ralson-rcu11',
+    active: false, // early placeholder, replaced by RALSON_RANGE
     brandId: 'ralson',
     brandName: 'Ralson',
     code: 'RCU11',

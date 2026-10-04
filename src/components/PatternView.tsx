@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import { BRANDS } from '@/data/mockData';
 import { useApp } from '@/context/AppContext';
 import { ChevronLink, Container } from '@/components/ui';
-import TyreGraphic from '@/components/TyreGraphic';
+import TyreGallery from '@/components/TyreGallery';
+import { imagesFor } from '@/lib/tyreImages';
 import PatternSizes from '@/components/PatternSizes';
 import { POSITION_LABEL } from '@/lib/tyres';
 
@@ -35,8 +36,8 @@ export default function PatternView({ brandSlug, code }: { brandSlug: string; co
     <section className="py-12 sm:py-20">
       <Container>
         <div className="grid items-start gap-10 md:grid-cols-2 md:gap-16">
-          <div className="flex justify-center rounded-3xl bg-panel px-8 py-16 md:sticky md:top-24">
-            <TyreGraphic className="w-56 sm:w-72" />
+          <div className="md:sticky md:top-24">
+            <TyreGallery images={imagesFor(pattern)} name={`${pattern.brandName} ${pattern.code}`} />
           </div>
 
           <div className="min-w-0">

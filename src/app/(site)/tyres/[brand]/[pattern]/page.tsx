@@ -6,7 +6,7 @@ type Props = { params: Promise<{ brand: string; pattern: string }> };
 
 // Pre-render the starting range; tyres added later in admin are rendered on request.
 export function generateStaticParams() {
-  return PATTERNS.map((p) => ({ brand: p.brandId, pattern: p.code.toLowerCase() }));
+  return PATTERNS.filter((p) => p.active !== false).map((p) => ({ brand: p.brandId, pattern: p.code.toLowerCase() }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

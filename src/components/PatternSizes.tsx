@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { Pattern } from '@/types';
 import { Spec } from '@/components/ui';
 import AddToCart from '@/components/AddToCart';
+import { SITE } from '@/data/site';
 import { POSITION_LABEL } from '@/lib/tyres';
 import { availabilityBand, totalStock, AVAILABILITY_LABEL } from '@/lib/availability';
 
@@ -13,7 +14,18 @@ export default function PatternSizes({ pattern }: { pattern: Pattern }) {
   const sku = pattern.skus.find((s) => s.id === skuId) ?? pattern.skus[0];
 
   if (!sku) {
-    return <p className="text-muted">Ring us for available sizes.</p>;
+    return (
+      <div className="rounded-3xl bg-panel px-6 py-5">
+        <p className="font-medium">Sizes coming soon</p>
+        <p className="mt-1 text-muted">
+          Give us a ring on{' '}
+          <a href={SITE.phoneHref} className="font-medium text-brand hover:underline">
+            {SITE.phone}
+          </a>{' '}
+          and we&apos;ll sort you out.
+        </p>
+      </div>
+    );
   }
 
   const band = availabilityBand(totalStock(sku));

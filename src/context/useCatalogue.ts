@@ -13,7 +13,7 @@ import { normaliseSize } from '@/lib/tyres';
  * behind staff-only server actions. Keep the action names; only their insides change.
  */
 
-const STORAGE_KEY = 'ut_catalogue_v1';
+const STORAGE_KEY = 'ut_catalogue_v2';
 
 /** Patterns are stored without their sizes; sizes live in one list and are joined on read. */
 type StoredPattern = Omit<Pattern, 'skus'>;
@@ -74,7 +74,15 @@ export function useCatalogueState(hydrated: boolean) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as CatalogueData;
-        if (Array.isArray(parsed.patterns) && Array.isArray(parsed.skus)) setData(parsed);
+        if (Array.isArray(parsed.patterns) && Array.isArray(parsed.skus)) {
+          // Add any starting tyres that shipped after this browser last saved.
+          const have = new Set(parsed.patterns.map((p) => p.id));
+          const haveSku = new Set(parsed.skus.map((s) => s.id));
+          setData({
+            patterns: [...parsed.patterns, ...INITIAL.patterns.filter((p) => !have.has(p.id))],
+            skus: [...parsed.skus, ...INITIAL.skus.filter((s) => !haveSku.has(s.id))],
+          });
+        }
       }
     } catch {
       // Keep defaults.

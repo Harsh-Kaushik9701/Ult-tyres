@@ -54,7 +54,7 @@ export default function QuickOrderPage() {
           setInput(e.target.value);
           setAdded(0);
         }}
-        placeholder={'11R22.5 BD175, 8\n295/80R22.5 RAC44, 4'}
+        placeholder={'11R22.5 BD175, 8\n295/80R22.5 TRS02, 4'}
         className={`${inputClass} font-mono text-[15px]`}
       />
 

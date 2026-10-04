@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+import { ImageOff } from 'lucide-react';
+import { imagesFor } from '@/lib/tyreImages';
 import { useApp } from '@/context/AppContext';
 import { BRANDS } from '@/data/mockData';
 import type { AxlePosition, Pattern, TyreApplication, TyreCategory } from '@/types';
@@ -51,6 +54,19 @@ function Chips<T extends string>({
         })}
       </div>
     </fieldset>
+  );
+}
+
+function TyreThumb({ p }: { p: Pattern }) {
+  const img = imagesFor(p)[0];
+  return (
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white p-1">
+      {img ? (
+        <Image src={img.src} alt="" width={img.width} height={img.height} sizes="56px" className="h-full w-full object-contain" />
+      ) : (
+        <ImageOff className="h-5 w-5 text-line" aria-hidden />
+      )}
+    </div>
   );
 }
 
@@ -421,13 +437,17 @@ export default function TyresTab() {
                   const shownSizes = p.skus.filter((s) => s.active !== false).length;
                   return (
                     <li key={p.id} className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className={visible ? '' : 'opacity-60'}>
+                      <div className={`flex items-center gap-4 ${visible ? '' : 'opacity-60'}`}>
+                        <TyreThumb p={p} />
+                        <div>
                         <p className="text-lg font-semibold">{p.code}</p>
                         <p className="text-[14px] text-muted">
                           {p.category === 'bus' ? 'Bus' : 'Truck'} · {p.positions.map((x) => POSITION_LABEL[x]).join(', ')} ·{' '}
                           {p.skus.length === 1 ? '1 size' : `${p.skus.length} sizes`}
                           {shownSizes < p.skus.length ? ` (${p.skus.length - shownSizes} hidden)` : ''}
+                          {imagesFor(p).length === 0 && ' · No photos yet'}
                         </p>
+                        </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <Toggle

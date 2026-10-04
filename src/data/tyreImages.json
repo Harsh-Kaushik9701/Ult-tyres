@@ -1,0 +1,16 @@
+{
+  "ralson-rdr95": [
+    {
+      "src": "/tyres/ralson/rdr95/side.webp",
+      "kind": "side",
+      "width": 1101,
+      "height": 1600
+    },
+    {
+      "src": "/tyres/ralson/rdr95/tread.webp",
+      "kind": "tread",
+      "width": 555,
+      "height": 658
+    }
+  ]
+}
