@@ -14,11 +14,16 @@ import {
   INITIAL_PRICING_REQUESTS,
   INITIAL_ORDERS,
   INITIAL_APPLICATIONS,
-  PRICE_MATRIX,
   SKUS,
 } from '@/data/mockData';
 
+/** Demo role switcher and one-click demo logins. Off unless NEXT_PUBLIC_DEMO_MODE=true. */
+export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 interface AppContextType {
+  /** False until saved state has been read from the browser after mount. */
+  hydrated: boolean;
+
   // Session
   session: UserSession | null;
   setSession: (session: UserSession | null) => void;
@@ -72,29 +77,21 @@ interface AppContextType {
   clearNotification: () => void;
 }
 
-const DEFAULT_DEALER_OWNER: UserSession = {
-  id: 'usr-dave-01',
-  name: 'Dave Miller',
-  email: 'dave@apexfleet.com.au',
-  role: 'owner',
-  dealerId: 'dlr-apex',
-  dealerName: 'Apex Fleet Logistics Pty Ltd',
-  branch: 'Rocklea',
-  tier: 'A',
-};
-
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<UserSession | null>(DEFAULT_DEALER_OWNER);
+  const [session, setSession] = useState<UserSession | null>(null);
+  const [hydrated, setHydrated] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [pricingRequests, setPricingRequests] = useState<PricingRequest[]>(INITIAL_PRICING_REQUESTS);
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [applications, setApplications] = useState<DealerApplication[]>(INITIAL_APPLICATIONS);
   const [recentNotification, setRecentNotification] = useState<string | null>(null);
 
-  // Load from localStorage if present
+  // Load from localStorage after mount. Reading it during render would make the
+  // server and client HTML differ. Interim only: MongoDB replaces this store.
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration from browser storage */
     try {
       const storedCart = localStorage.getItem('ut_cart');
       if (storedCart) setCart(JSON.parse(storedCart));
@@ -111,12 +108,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const storedSession = localStorage.getItem('ut_session');
       if (storedSession) setSession(JSON.parse(storedSession));
     } catch {
-      // LocalStorage fallback
+      // Storage unavailable (private mode, blocked): keep defaults.
     }
+    setHydrated(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
-  // Save changes to localStorage
+  // Save changes to localStorage (only after hydration, so defaults never overwrite saved state)
   useEffect(() => {
+    if (!hydrated) return;
     try {
       localStorage.setItem('ut_cart', JSON.stringify(cart));
       localStorage.setItem('ut_rfqs', JSON.stringify(pricingRequests));
@@ -126,7 +126,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch {
       // ignore
     }
-  }, [cart, pricingRequests, orders, applications, session]);
+  }, [hydrated, cart, pricingRequests, orders, applications, session]);
 
   const clearNotification = () => setRecentNotification(null);
 
@@ -237,12 +237,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     branchOrAddress: string;
     notes?: string;
   }): PricingRequest => {
+    if (!session?.dealerId || !session.dealerName) {
+      throw new Error('Sign in with a dealer account to submit a pricing request.');
+    }
     const quoteNum = `RFQ-${Math.floor(1000 + Math.random() * 9000)}`;
     const newRfq: PricingRequest = {
       id: `rfq-${Date.now()}`,
       quoteNumber: quoteNum,
-      dealerId: session?.dealerId || 'dlr-apex',
-      dealerName: session?.dealerName || 'Apex Fleet Logistics Pty Ltd',
+      dealerId: session.dealerId,
+      dealerName: session.dealerName,
       requestedBy: session?.name || 'Authorized Buyer',
       createdAt: new Date().toISOString(),
       requiredByDate: requiredByDate || 'Within 48 hours',
@@ -489,6 +492,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        hydrated,
         session,
         setSession,
         switchRole,

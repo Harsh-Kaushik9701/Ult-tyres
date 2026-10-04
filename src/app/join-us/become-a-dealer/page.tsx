@@ -409,7 +409,7 @@ export default function BecomeADealerPage() {
                       <label className="block text-[#868E96] font-bold uppercase mb-1">Account Terms Preference</label>
                       <select
                         value={creditPref}
-                        onChange={(e) => setCreditPref(e.target.value as any)}
+                        onChange={(e) => setCreditPref(e.target.value as '30-day' | 'pay-per-order')}
                         className="w-full bg-[#121416] border border-[#343A40] text-white rounded-lg px-3 py-2.5 focus:border-[#D50000] focus:outline-none"
                       >
                         <option value="30-day">30-Day Commercial Credit Terms</option>

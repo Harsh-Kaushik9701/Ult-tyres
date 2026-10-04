@@ -7,14 +7,14 @@ import { Lock, Mail, KeyRound, Shield, CheckCircle2, ArrowRight, UserCheck } fro
 import TopUtilityRibbon from '@/components/TopUtilityRibbon';
 import MainHeader from '@/components/MainHeader';
 import Footer from '@/components/Footer';
-import { useApp } from '@/context/AppContext';
+import { useApp, DEMO_MODE } from '@/context/AppContext';
 
 export default function DealerLoginPage() {
   const router = useRouter();
   const { session, setSession, switchRole } = useApp();
 
-  const [email, setEmail] = useState('dave@apexfleet.com.au');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [usePasskey, setUsePasskey] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -114,7 +114,8 @@ export default function DealerLoginPage() {
               </form>
             </div>
 
-            {/* Quick Demo Shortcuts */}
+            {/* Quick demo shortcuts: only when NEXT_PUBLIC_DEMO_MODE=true */}
+            {DEMO_MODE && (
             <div className="mt-6 pt-4 border-t border-[#25292E] text-xs">
               <div className="text-[10px] uppercase font-bold text-[#868E96] mb-2 font-condensed">
                 Quick Evaluation Presets:
@@ -143,6 +144,7 @@ export default function DealerLoginPage() {
                 </button>
               </div>
             </div>
+            )}
           </div>
 
           {/* Right Door: New Business Apply (Tempe & NTAW pattern) */}

@@ -22,8 +22,8 @@ export default function QuotesListPage() {
 
   // Filter requests for active dealer
   const dealerRfqs = pricingRequests.filter((r) => {
-    // If dealerId matches or if viewing as owner/buyer
-    if (session?.dealerId && r.dealerId !== session.dealerId) return false;
+    // Only this dealer's requests
+    if (!session?.dealerId || r.dealerId !== session.dealerId) return false;
 
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;
 

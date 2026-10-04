@@ -27,15 +27,21 @@ export default function QuoteDetailPage() {
   const router = useRouter();
   const quoteId = params?.id as string;
 
-  const { pricingRequests, dealerAcceptQuote, dealerDeclineQuote, addRfqThreadMessage } = useApp();
-
-  const rfq = pricingRequests.find((r) => r.id === quoteId);
-  if (!rfq) return notFound();
+  const { hydrated, session, pricingRequests, dealerAcceptQuote, dealerDeclineQuote, addRfqThreadMessage } = useApp();
 
   const [newMessage, setNewMessage] = useState('');
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [declineReason, setDeclineReason] = useState('Price higher than budget');
   const [isAccepting, setIsAccepting] = useState(false);
+
+  // Wait for saved requests to load, otherwise a refresh on a new quote shows "not found".
+  if (!hydrated) {
+    return <div className="py-16 text-center text-sm text-[#6C757D]" role="status">Loading quote…</div>;
+  }
+
+  // A dealer may only open their own requests; anything else is treated as not found.
+  const rfq = pricingRequests.find((r) => r.id === quoteId && r.dealerId === session?.dealerId);
+  if (!rfq) return notFound();
 
   const isReady = rfq.status === 'quote_ready';
   const isAccepted = rfq.status === 'accepted';

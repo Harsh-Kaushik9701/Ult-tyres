@@ -22,7 +22,7 @@ export default function OrdersListPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const dealerOrders = orders.filter((o) => {
-    if (session?.dealerId && o.dealerId !== session.dealerId) return false;
+    if (!session?.dealerId || o.dealerId !== session.dealerId) return false;
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
       return (

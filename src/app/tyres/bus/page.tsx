@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton';
 import { SKUS, PATTERNS } from '@/data/mockData';
 import { useApp } from '@/context/AppContext';
+import { availabilityBand, totalStock, AVAILABILITY_LABEL, AVAILABILITY_CLASS } from '@/lib/availability';
 
 export default function BusTyresPage() {
   const { session, addToCart } = useApp();
@@ -88,10 +89,7 @@ export default function BusTyresPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {busSkus.map((sku) => {
                 const currentQty = quantities[sku.id] || 4;
-                const totalStock =
-                  sku.inStockBranches.rocklea +
-                  sku.inStockBranches.yatala +
-                  sku.inStockBranches.baldhills;
+                const band = availabilityBand(totalStock(sku));
 
                 return (
                   <div
@@ -139,7 +137,7 @@ export default function BusTyresPage() {
                       <div className="mt-4 pt-3 border-t border-[#25292E] text-xs">
                         <div className="flex justify-between text-[#CED4DA]">
                           <span className="text-[#868E96]">Stock Availability:</span>
-                          <span className="text-emerald-400 font-bold">In Stock ({totalStock} units)</span>
+                          <span className={`font-bold ${AVAILABILITY_CLASS[band]}`}>{AVAILABILITY_LABEL[band]}</span>
                         </div>
                       </div>
                     </div>
