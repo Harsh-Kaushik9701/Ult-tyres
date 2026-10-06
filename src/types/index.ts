@@ -45,6 +45,8 @@ export interface ProductSku {
   };
   incomingQty: number;
   incomingEta: string;
+  /** false = hidden from dealers and the public site. Missing means visible. */
+  active?: boolean;
 }
 
 export interface Pattern {
@@ -64,6 +66,8 @@ export interface Pattern {
   treadImage: string;
   datasheetPdf: string;
   skus: ProductSku[];
+  /** false = hidden from dealers and the public site. Missing means visible. */
+  active?: boolean;
 }
 
 export interface PriceMatrixBand {

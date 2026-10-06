@@ -4,7 +4,7 @@ import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 
 const barlowCondensed = Barlow_Condensed({
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["600", "700"],
   subsets: ["latin"],
   variable: "--font-barlow-condensed",
   display: "swap",
@@ -19,33 +19,20 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Ultimate Tyres Australia",
-    default: "Ultimate Tyres — Heavy Truck & Commercial Tyre Wholesalers & Fleet Solutions",
+    template: "%s | Ultimate Tyres",
+    default: "Ultimate Tyres | Truck and bus tyres, Brisbane",
   },
   description:
-    "Authorised Australian distributor for Ralson, Blacklion & Triangle commercial truck and bus tyres. Rapid RFQ dealer portal, 24/7 mobile fleet breakdown, and precision wheel alignment in Brisbane (Rocklea, Yatala, Bald Hills).",
-  keywords: [
-    "commercial tyres Brisbane",
-    "truck tyres Rocklea",
-    "Ralson truck tyres Australia",
-    "Blacklion truck tyres",
-    "Triangle truck tyres",
-    "heavy wheel alignment Brisbane",
-    "fleet tyre management",
-    "Ultimate ReadyFit",
-  ],
-  authors: [{ name: "Ultimate Tyres" }],
+    "Ralson, Blacklion and Triangle truck and bus tyres, supplied and fitted across South East Queensland. Branches at Rocklea, Yatala and Bald Hills.",
   icons: {
     icon: "/favicon.ico",
   },
 };
 
-// WCAG 2.2 AA compliant viewport: allow pinch-to-zoom (user-scalable=yes)
+// Pinch-zoom stays enabled (WCAG 2.2).
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
   themeColor: "#1C1F22",
 };
 
@@ -55,11 +42,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col font-body bg-[#121416] text-[#E9ECEF]">
+    <html lang="en-AU" className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-white text-ink">
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

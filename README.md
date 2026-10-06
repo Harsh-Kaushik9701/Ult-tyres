@@ -42,19 +42,24 @@ See `.env.example`.
 3. **Every dealer record lookup must match the signed-in dealer's ID.** See the quote and order detail pages.
 4. `src/proxy.ts` (Next 16's replacement for `middleware.ts`) is a staging guard, not the dealer login. Real authentication replaces it in step 2.
 
+## Design
+
+Simple, Apple-style layout: white and light-grey surfaces, big short headlines, one idea per section, charcoal tiles for contrast, High-Vis Red only for actions. Copy is short and in Australian English. Shared building blocks live in `src/components/ui.tsx`; use them instead of one-off styles. Tokens are in `src/app/globals.css`.
+
 ## Project structure
 
 ```
 src/
-  app/                 routes (public site, /portal, /admin)
-    admin/actions.ts   staff-only server actions (pricing)
-  components/          shared UI (header, ribbon, footer, diagrams)
+  app/
+    (site)/            public pages; share one header, footer and WhatsApp button
+    portal/            dealer portal (top tabs, plain wording)
+    admin/             staff desk; actions.ts = staff-only server actions (pricing)
+  components/          ui.tsx primitives, SiteHeader, SiteFooter, TyreFinder, AddToCart…
   context/AppContext   interim browser-side state (replaced by MongoDB in step 2)
-  data/mockData.ts     sample catalogue, branches, quotes, orders
-  lib/                 shared helpers (availability bands, interim auth)
+  data/                mockData (catalogue, branches), site (contact details), content (news, jobs)
+  lib/                 availability bands, ABN check, status labels, tyre helpers, interim auth
   server/              server-only modules (price matrix)
   proxy.ts             interim Basic auth for /portal and /admin
-  types/               shared TypeScript types
 ```
 
 ## Next steps
@@ -63,5 +68,5 @@ src/
 2. Better Auth: staff-created dealer accounts with invite links, passkeys or password + MFA; remove the Basic auth guard.
 3. Server actions for cart → pricing request → quote → order, every query scoped to the dealer's ID, quote → order in one transaction.
 4. Email and SMS notifications, real ABN lookup, working contact, careers and application forms.
-5. Real content: the client's tyre range, branch addresses (5 Permarig Pl Rocklea, 4 Ozkleen Pl Yatala, 79 Linkfield Rd Bald Hills), WhatsApp number, photos, videos, logo.
+5. Real content: the client's tyre range, opening hours, email, WhatsApp number (`src/data/site.ts`), photos, videos, logo, and approved legal pages.
 6. Video banner slider, interactive map, per-page metadata, sitemap, robots, structured data and 301 redirects from the old `?page_id=` URLs.
