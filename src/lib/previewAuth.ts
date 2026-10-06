@@ -58,6 +58,12 @@ function decodeBasic(header: string | null): Credentials | null {
   }
 }
 
+/** Names (never values) of the variables this area still needs, for the "not set up" page. */
+export function missingVariables(area: PreviewArea): string[] {
+  const names = area === 'admin' ? ['ADMIN_USER', 'ADMIN_PASSWORD'] : ['PORTAL_USER', 'PORTAL_PASSWORD'];
+  return names.filter((n) => !process.env[n]);
+}
+
 export type PreviewAuthResult = 'ok' | 'unauthorised' | 'not-configured';
 
 /** Check an `Authorization` header against the credentials for an area. */

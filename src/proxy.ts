@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { checkPreviewAuth, type PreviewArea } from '@/lib/previewAuth';
+import { checkPreviewAuth, missingVariables, type PreviewArea } from '@/lib/previewAuth';
 
 /**
  * Locks the dealer portal and admin desk behind interim Basic auth
@@ -16,10 +16,16 @@ export function proxy(request: NextRequest) {
   if (result === 'ok') return NextResponse.next();
 
   if (result === 'not-configured') {
-    return new NextResponse('This area is not available yet.', {
-      status: 503,
-      headers: { 'Cache-Control': 'no-store' },
-    });
+    // Says which variable names are missing (never their values), so setup problems are obvious.
+    const missing = missingVariables(area).join(', ');
+    return new NextResponse(
+      `This area is not available yet.\n\nThe server has no login set for it. Missing: ${missing}.\n` +
+        'Add them in Vercel > Settings > Environment Variables (tick Production and Preview), then redeploy.',
+      {
+        status: 503,
+        headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain; charset=utf-8' },
+      }
+    );
   }
 
   // Only challenge real page loads. Background fetches (link prefetch, client-side
