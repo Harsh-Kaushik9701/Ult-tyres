@@ -22,6 +22,15 @@ export function proxy(request: NextRequest) {
     });
   }
 
+  // Only challenge real page loads. Background fetches (link prefetch, client-side
+  // navigation) get a plain 401: otherwise the browser pops up its sign-in box on
+  // pages that merely link here (e.g. the dealer login page linking to /admin).
+  // Next.js turns a failed client navigation into a full page load, which is then challenged.
+  const mode = request.headers.get('sec-fetch-mode');
+  if (mode && mode !== 'navigate') {
+    return new NextResponse(null, { status: 401, headers: { 'Cache-Control': 'no-store' } });
+  }
+
   return new NextResponse('Authentication required.', {
     status: 401,
     headers: {
