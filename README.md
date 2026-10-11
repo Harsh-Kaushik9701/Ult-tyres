@@ -46,6 +46,13 @@ See `.env.example`.
 
 Simple, Apple-style layout: white and light-grey surfaces, big short headlines, one idea per section, charcoal tiles for contrast, High-Vis Red only for actions. Copy is short and in Australian English. Shared building blocks live in `src/components/ui.tsx`; use them instead of one-off styles. Tokens are in `src/app/globals.css`.
 
+## Motion and media
+
+- Animation uses [`motion`](https://motion.dev) (`motion/react`) for scroll-linked and stateful effects, and plain CSS for the rest. New pieces live in `src/components/motion/`.
+- Add `className="reveal"` to any block to fade it in as it scrolls into view. It uses CSS scroll-driven animations; browsers without support (Firefox stable) just show it.
+- Every effect has a readable resting state and respects reduced motion.
+- **Photos and the hero video are temporary Pexels stock** listed in `src/data/media.ts` and loaded from Pexels' servers. Replace them by dropping files into `public/media/` and changing the `src` there. Tyre pattern photos still go through `npm run tyre-images`.
+
 ## Project structure
 
 ```

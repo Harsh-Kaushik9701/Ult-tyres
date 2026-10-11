@@ -73,6 +73,74 @@
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Motion. Every effect starts from a fully visible resting state, so content is readable
+ * with JS off, with reduced motion on, and in browsers without scroll-driven animations.
+ */
+
+/* Hero headline words rise into place once on load. */
+.hero-rise {
+  animation: hero-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes hero-rise {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+
+/* Road strip under the hero: tread mark and lane line. */
+.hero-tread {
+  background: repeating-linear-gradient(90deg, #000 0 7px, transparent 7px 13px);
+  opacity: 0.6;
+}
+.hero-lane {
+  background: repeating-linear-gradient(90deg, #f5c400 0 48px, transparent 48px 96px);
+  opacity: 0.7;
+}
+
+/* Brand strip. */
+.ticker-track {
+  animation: ticker 36s linear infinite;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+@keyframes ticker {
+  to { transform: translateX(-50%); }
+}
+
+/*
+ * .reveal: fades and lifts a section in as it enters the viewport.
+ * Uses CSS scroll-driven animations (Chrome, Edge, Safari 26+). Browsers without
+ * support (Firefox stable in 2026) simply show the section as normal.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+    }
+  }
+}
+@keyframes reveal {
+  from { opacity: 0.15; transform: translateY(40px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Lift on hover for photo tiles; the photo zooms slightly inside its frame. */
+.tile-lift {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tile-lift:hover {
+  transform: translateY(-4px);
+}
+.tile-lift img {
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tile-lift:hover img {
+  transform: scale(1.05);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
