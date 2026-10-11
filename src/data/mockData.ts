@@ -1,4 +1,5 @@
 import { Brand, Pattern, ProductSku, Branch, Dealer, PricingRequest, Order, DealerApplication } from '@/types';
+import { FLAGSHIP_IDS, FLAGSHIP_PATTERNS } from './flagships';
 
 export const BRANDS: Brand[] = [
   {
@@ -401,7 +402,8 @@ const RALSON_RANGE: Pattern[] = [
 ];
 
 export const PATTERNS: Pattern[] = [
-  ...RALSON_RANGE,
+  ...RALSON_RANGE.filter((p) => !FLAGSHIP_IDS.has(p.id)),
+  ...FLAGSHIP_PATTERNS,
   {
     id: 'ralson-rac44',
     active: false, // early placeholder, replaced by RALSON_RANGE
@@ -603,7 +605,8 @@ export const BRANCHES: Branch[] = [
     hours: '', // TODO(client): confirm opening hours
     services: ['Tyre fitting', 'Wheel alignment', 'Wheel balancing', 'Mobile service'],
     isHq: true,
-    coordinates: { lat: -27.5486, lng: 153.0037 },
+    mapQuery: 'Ultimate Tyre Services (24/7 Mobile service), 5 Permarig Pl, Rocklea QLD 4106',
+    coordinates: { lat: -27.5563, lng: 153.0001 },
   },
   {
     id: 'yatala',

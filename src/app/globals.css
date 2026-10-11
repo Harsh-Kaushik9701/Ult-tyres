@@ -87,6 +87,15 @@
   to { transform: none; }
 }
 
+/* Banner progress bar fills over the slide's interval. */
+.hero-progress {
+  animation: hero-progress linear forwards;
+}
+@keyframes hero-progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
 /* Road strip under the hero: tread mark and lane line. */
 .hero-tread {
   background: repeating-linear-gradient(90deg, #000 0 7px, transparent 7px 13px);

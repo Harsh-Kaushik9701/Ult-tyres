@@ -12,7 +12,29 @@ export const SITE = {
     'https://wa.me/61400000000?text=' + encodeURIComponent("G'day Ultimate Tyres, I'm after some truck tyres."),
   facebook: 'https://www.facebook.com/Ultimate-tyre-services-Brisbane-2420151501575327',
   instagram: 'https://www.instagram.com/Ultimatetyreservices/',
+  /** Google Business listing (Rocklea), as shown on Google Maps. */
+  google: {
+    listingName: 'Ultimate Tyre Services (24/7 Mobile service)',
+    rating: 4.9,
+    reviewCount: 137,
+    url:
+      'https://www.google.com/maps/search/?api=1&query=' +
+      encodeURIComponent('Ultimate Tyre Services (24/7 Mobile service), 5 Permarig Pl, Rocklea QLD 4106'),
+  },
 };
+
+/**
+ * Keyless Google Maps embed for an address or business name. No API key or script needed;
+ * it is a plain iframe. Use the full listing name for the Rocklea HQ so the business pin shows.
+ */
+export function mapEmbedUrl(query: string, zoom = 14): string {
+  return `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=${zoom}&output=embed`;
+}
+
+/** "Get directions" link that opens Google Maps on the phone or desktop. */
+export function directionsUrl(query: string): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+}
 
 export const NAV = [
   {

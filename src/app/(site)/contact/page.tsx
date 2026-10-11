@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { MapPin, MessageCircle, Phone } from 'lucide-react';
 import { BRANCHES } from '@/data/mockData';
-import { SITE } from '@/data/site';
+import { SITE, directionsUrl } from '@/data/site';
+import GoogleMap, { branchQuery } from '@/components/GoogleMap';
 import { Container, PageHero, Tile } from '@/components/ui';
 import EnquiryForm from '@/components/EnquiryForm';
 
@@ -49,6 +50,9 @@ export default function ContactPage() {
       <section className="pb-20">
         <Container>
           <h2 className="mb-6 text-center text-2xl font-semibold">Our branches</h2>
+          <div className="mb-6 h-[340px] overflow-hidden rounded-3xl bg-panel sm:h-[420px]">
+            <GoogleMap query={branchQuery(BRANCHES[0])} title="Map of Ultimate Tyres Rocklea head office" zoom={15} />
+          </div>
           <ul className="grid gap-4 sm:grid-cols-3">
             {BRANCHES.map((b) => (
               <li key={b.id} className="rounded-3xl bg-panel px-6 py-7">
@@ -60,9 +64,7 @@ export default function ContactPage() {
                   </span>
                 </p>
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    `${b.address}, ${b.suburb} ${b.state} ${b.postcode}`
-                  )}`}
+                  href={directionsUrl(branchQuery(b))}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-3 inline-block text-[15px] font-medium text-brand hover:underline"

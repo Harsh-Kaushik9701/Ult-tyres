@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "tyre-images": "node scripts/import-tyre-images.mjs"
+    "tyre-images": "node scripts/import-tyre-images.mjs",
+    "brand-images": "node scripts/fetch-brand-images.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

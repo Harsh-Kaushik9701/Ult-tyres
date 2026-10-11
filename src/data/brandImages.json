@@ -1,0 +1,82 @@
+{
+  "_note": "Official product photos from each manufacturer's website, used until local copies exist. Run `npm run brand-images` to download them into public/tyres/ (local copies then take over). TODO(client): confirm permission via the Ralson, Blacklion and Triangle dealer media kits.",
+  "ralson-rsl51": {
+    "source": "https://ralsonglobal.com/product/rsl-51-r7",
+    "images": [
+      { "src": "https://ralsonglobal.com/storage/products/media/01KZ5TC97P39ES1SH8DRYXCG0V.png", "kind": "side" },
+      { "src": "https://ralsonglobal.com/storage/products/media/01KZ5TC97RTRMR6BD4F1J4J276.png", "kind": "extra" }
+    ]
+  },
+  "ralson-rdl52": {
+    "source": "https://ralsonglobal.com/product/rdl-52",
+    "images": [
+      { "src": "https://ralsonglobal.com/storage/products/media/01KZ5TGF6Z0XKVK5QD6TY0JJ8A.png", "kind": "side" },
+      { "src": "https://ralsonglobal.com/storage/products/media/01KZ5TGF715NAP7K9HMACM1XKJ.png", "kind": "extra" }
+    ]
+  },
+  "ralson-rdl55": {
+    "source": "https://ralsonglobal.com/product/rdl-55",
+    "images": [
+      { "src": "https://ralsonglobal.com/storage/products/media/01KZRBZ2707MJY6XB7M293VCVK.webp", "kind": "side" },
+      { "src": "https://ralsonglobal.com/storage/products/media/01KZRAVFZAWDGV3ZYGAKD9JMG0.webp", "kind": "extra" }
+    ]
+  },
+  "ralson-rtr51": {
+    "source": "https://ralsonglobal.com/product/rtr-51",
+    "images": [
+      { "src": "https://ralsonglobal.com/storage/products/media/01K8QQA3ZFV5W7HJVAFACVD57C.png", "kind": "side" },
+      { "src": "https://ralsonglobal.com/storage/products/media/01KZ8FEJWTTA1DV6XEDYV2BGS9.png", "kind": "extra" }
+    ]
+  },
+  "blacklion-bf188": {
+    "source": "https://www.blackliontires.com.cn/html/products_long_haul/12.html",
+    "images": [
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/5c9755ee10279fb1bd69e3208b05bc89.png", "kind": "side" },
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/cbd9e23660fc1522b8ee0696581cdc09.png", "kind": "extra" },
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/14d0d597a9b4add28187fe528ef53a93.png", "kind": "extra" }
+    ]
+  },
+  "blacklion-bd175": {
+    "source": "https://www.blackliontires.com.cn/html/products_regional/13.html",
+    "images": [
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/8af5c8be389d72986bdb8dca5f06f9b0.png", "kind": "side" },
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/ff3e52d1d5e7359216e929ff2a3d7254.png", "kind": "extra" },
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/a0249e8f2337cbd7adcfc7f930b6ba63.png", "kind": "extra" }
+    ]
+  },
+  "blacklion-bt165": {
+    "source": "https://www.blackliontires.com.cn/html/products_long_haul/6.html",
+    "images": [
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/9ec287e652efe37b2f43def370ddc372.png", "kind": "side" },
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/b5c3f67a0640d2f18caa26269d7455c5.png", "kind": "extra" },
+      { "src": "https://www.blackliontires.com.cn/uploads/allimg/20211222/a0630c643eccfeaff907c11bde46e280.png", "kind": "extra" }
+    ]
+  },
+  "triangle-trs02": {
+    "source": "https://en.triangle.com.cn/Cn/Index/pageView/catid/29/id/76.html",
+    "images": [
+      { "src": "https://en.triangle.com.cn/Public/Uploads/uploadfile/images/20191214/20191214150325_5df4893d4ec06.jpg", "kind": "side" },
+      { "src": "https://en.triangle.com.cn/Public/Uploads/uploadfile/images/20230621/20230621161506_6492b18a87bca.jpg", "kind": "extra" }
+    ]
+  },
+  "triangle-tr688": {
+    "source": "https://en.triangle.com.cn/Cn/Index/pageView/catid/29/id/239.html",
+    "images": [
+      { "src": "https://en.triangle.com.cn/Public/Uploads/uploadfile/images/20200107/20200107115859_5e140203e7683.jpg", "kind": "side" }
+    ]
+  },
+  "triangle-trd06": {
+    "source": "https://en.triangle.com.cn/Cn/Index/pageView/catid/29/id/87.html",
+    "images": [
+      { "src": "https://en.triangle.com.cn/Public/Uploads/uploadfile/images/20191214/20191214150724_5df48a2c3f611.jpg", "kind": "side" },
+      { "src": "https://en.triangle.com.cn/Public/Uploads/uploadfile/images/20200108/20200108115652_5e155304d084d.jpg", "kind": "extra" }
+    ]
+  },
+  "triangle-trt02": {
+    "source": "https://en.triangle.com.cn/Cn/Index/pageView/catid/29/id/100.html",
+    "images": [
+      { "src": "https://en.triangle.com.cn/Public/Uploads/uploadfile/images/20191214/20191214151149_5df48b35acf40.jpg", "kind": "side" },
+      { "src": "https://en.triangle.com.cn/Public/Uploads/uploadfile/images/20230625/20230625085320_649790003ca70.jpg", "kind": "extra" }
+    ]
+  }
+}

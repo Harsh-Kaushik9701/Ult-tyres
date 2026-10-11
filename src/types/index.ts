@@ -222,6 +222,8 @@ export interface Branch {
   hours: string;
   services: string[];
   isHq: boolean;
+  /** What to search on Google Maps for this branch. Falls back to the street address. */
+  mapQuery?: string;
   coordinates: {
     lat: number;
     lng: number;

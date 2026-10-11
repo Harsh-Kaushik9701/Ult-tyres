@@ -51,6 +51,9 @@ Simple, Apple-style layout: white and light-grey surfaces, big short headlines, 
 - Animation uses [`motion`](https://motion.dev) (`motion/react`) for scroll-linked and stateful effects, and plain CSS for the rest. New pieces live in `src/components/motion/`.
 - Add `className="reveal"` to any block to fade it in as it scrolls into view. It uses CSS scroll-driven animations; browsers without support (Firefox stable) just show it.
 - Every effect has a readable resting state and respects reduced motion.
+- **Flagship tyres** (Ralson RSL51, RDL52, RDL55, RTR51; Blacklion BF188, BD175, BT165; Triangle TRS02, TR688, TRD06, TRT02) are in `src/data/flagships.ts`, with details from each maker's product page. Their official photos are listed in `src/data/brandImages.json` and load from the makers' sites until you run `npm run brand-images` once (needs internet), which saves local WebP copies to `public/tyres/` that then take over. Commit the result.
+- **Google Maps**: `GoogleMap` is a keyless iframe embed (no API key). It's on the home page, `/network-map` (follows the selected branch) and `/contact`. The Rocklea branch uses the Google listing name so the business pin and reviews show. Rating and review count live in `SITE.google`.
+- **Truck photo in the axle finder**: set `TRUCK_HOTSPOTS` in `src/data/media.ts` to put tappable pins on the real wheels once you've picked the final photo.
 - **Photos and the hero video are temporary Pexels stock** listed in `src/data/media.ts` and loaded from Pexels' servers. Replace them by dropping files into `public/media/` and changing the `src` there. Tyre pattern photos still go through `npm run tyre-images`.
 
 ## Project structure

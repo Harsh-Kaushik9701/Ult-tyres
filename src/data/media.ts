@@ -26,6 +26,21 @@ export const MEDIA = {
     src: 'https://videos.pexels.com/video-files/6685034/6685034-uhd_2560_1440_30fps.mp4',
     credit: 'Gustavo Fring, Pexels 6685034 (close-up of a truck wheel turning)',
   },
+  workshopVideo: {
+    src: 'https://videos.pexels.com/video-files/6685053/6685053-uhd_2560_1440_30fps.mp4',
+    credit: 'Pexels 6685053 (mechanic inspecting a truck wheel)',
+  },
+  /**
+   * Prime mover and trailer for the axle finder (Unsplash licence, free to use).
+   * TODO(client): swap for a side-on photo of one of your own trucks.
+   */
+  truckRig: {
+    src: 'https://images.unsplash.com/photo-1711942179703-fce59b6afac6',
+    alt: 'White prime mover with a refrigerated trailer parked on the roadside',
+    width: 1600,
+    height: 1067,
+    credit: 'Bernd Dittrich, Unsplash OtbeW0R6RFo',
+  },
   fitting: {
     src: pexels(6720515),
     alt: 'Mechanic lifting a large tyre in a workshop',
@@ -76,3 +91,11 @@ export const BRANDS_SUPPLIED = [
   'Hankook',
   'Maxxis',
 ];
+
+/**
+ * Optional: wheel positions on the truck photo, as [left %, top %] from the photo's top-left.
+ * When set, glowing pins sit on the real wheels and can be tapped. Leave as null to show only
+ * the axle buttons under the photo (works with any photo).
+ * Example: { steer: [[18, 78]], drive: [[38, 80], [45, 80]], trailer: [[78, 80], [85, 80], [92, 80]] }
+ */
+export const TRUCK_HOTSPOTS: Record<'steer' | 'drive' | 'trailer', [number, number][]> | null = null;

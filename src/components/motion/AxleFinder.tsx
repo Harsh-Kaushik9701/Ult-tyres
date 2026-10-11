@@ -1,10 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import MediaImage from '@/components/motion/MediaImage';
+import SafeImage from '@/components/SafeImage';
+import { MEDIA, TRUCK_HOTSPOTS } from '@/data/media';
 
 export type FinderPosition = 'steer' | 'drive' | 'trailer';
 
@@ -25,11 +27,11 @@ const POSITIONS: { id: FinderPosition; label: string; note: string }[] = [
   { id: 'trailer', label: 'Trailer', note: 'Low scuff and low rolling resistance for free-rolling wheels.' },
 ];
 
-/** Wheel centres on the truck drawing (x positions), grouped by axle position. */
+/** Wheels per axle group, used for the little wheel icons on each button. */
 const WHEELS: Record<FinderPosition, number[]> = {
-  steer: [72],
-  drive: [236, 290],
-  trailer: [470, 524, 578],
+  steer: [1],
+  drive: [1, 2],
+  trailer: [1, 2, 3],
 };
 
 /** Steer, drive or trailer patterns first, then all-position ones that also fit. */
@@ -62,66 +64,65 @@ export default function AxleFinder({ patterns }: { patterns: FinderPattern[] }) 
   const reduce = useReducedMotion();
   const current = POSITIONS.find((p) => p.id === pos)!;
   const list = forPosition(patterns, pos);
+  const hotspots = TRUCK_HOTSPOTS;
 
   return (
     <div className="grid overflow-hidden rounded-3xl bg-charcoal text-white md:grid-cols-[1.2fr_1fr]">
-      <div className="grid content-center gap-6 border-b border-white/10 p-6 sm:p-8 md:border-b-0 md:border-r">
-        <svg viewBox="0 0 620 200" className="h-auto w-full" role="group" aria-label="Truck side view. Choose a wheel position.">
-          <rect x="205" y="32" width="400" height="104" rx="6" fill="#2a3036" />
-          <rect x="205" y="32" width="400" height="10" fill="#D50000" />
-          <rect x="575" y="120" width="30" height="8" fill="#f5c400" opacity="0.85" />
-          <rect x="215" y="136" width="380" height="8" fill="#1f2428" />
-          <path d="M18 140 V78 Q18 52 44 50 H112 Q128 50 134 66 L150 108 H196 V140 Z" fill="#3a4148" />
-          <path d="M40 60 H104 Q114 60 118 70 L128 98 H40 Z" fill="#11161a" />
-          <rect x="18" y="128" width="190" height="12" fill="#23282d" />
-          <rect x="138" y="22" width="10" height="84" rx="3" fill="#5c636a" />
-          <text x="300" y="96" fill="#9aa3ab" fontFamily="var(--font-display)" fontSize="26" fontWeight="700" letterSpacing="2">
-            ULTIMATE TYRES
-          </text>
-          {(Object.keys(WHEELS) as FinderPosition[]).map((p) => {
-            const on = p === pos;
+      <div className="flex min-w-0 flex-col border-b border-white/10 md:border-b-0 md:border-r">
+        {/* Real truck photo */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-charcoal-soft">
+          <MediaImage photo={MEDIA.truckRig} sizes="(min-width: 768px) 600px, 100vw" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/10 to-transparent" aria-hidden />
+          {/* Optional pins sitting on the actual wheels, when positions are set in media.ts */}
+          {hotspots &&
+            (Object.keys(hotspots) as FinderPosition[]).map((p) =>
+              hotspots[p].map(([x, y]) => (
+                <button
+                  key={`${p}-${x}`}
+                  type="button"
+                  aria-label={`${p} axle`}
+                  onClick={() => setPos(p)}
+                  className="absolute h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                  style={{ left: `${x}%`, top: `${y}%` }}
+                >
+                  <span className={`absolute inset-0 rounded-full ring-4 ${p === pos ? 'ring-brand-light' : 'ring-white/50'}`} />
+                  {p === pos && <span className="absolute inset-0 animate-ping rounded-full ring-4 ring-brand-light/60" />}
+                </button>
+              ))
+            )}
+          <p className="absolute bottom-3 left-4 text-[13px] font-medium uppercase tracking-wider text-white/80">Tap an axle</p>
+        </div>
+
+        {/* Axle strip: wheels laid out front to back, like the rig above */}
+        <div className="grid grid-cols-[1fr_1.4fr_2fr] gap-2 p-4 sm:gap-3 sm:p-6" role="group" aria-label="Wheel position">
+          {POSITIONS.map((p) => {
+            const on = p.id === pos;
             return (
-              <g
-                key={p}
-                role="button"
-                tabIndex={0}
-                aria-label={`${p} axle`}
+              <button
+                key={p.id}
+                type="button"
                 aria-pressed={on}
-                className="cursor-pointer outline-none [&:focus-visible_circle:first-child]:stroke-brand-light"
-                onClick={() => setPos(p)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setPos(p);
-                  }
-                }}
+                onClick={() => setPos(p.id)}
+                className={`group flex flex-col items-center gap-2 rounded-2xl px-2 py-3 transition ${
+                  on ? 'bg-brand text-white' : 'bg-charcoal-soft text-white hover:bg-[#3d444b]'
+                }`}
               >
-                {WHEELS[p].map((x) => (
-                  <g key={x}>
-                    <circle cx={x} cy={154} r={26} fill="#0d0f11" stroke={on ? '#FF3B30' : '#3a4148'} strokeWidth={on ? 4 : 2} className="transition-[stroke] duration-200 hover:stroke-brand-light" />
-                    <circle cx={x} cy={154} r={10} fill={on ? '#FF3B30' : '#5c636a'} className="transition-[fill] duration-200" />
-                  </g>
-                ))}
-              </g>
+                <span className="flex gap-1.5" aria-hidden>
+                  {WHEELS[p.id].map((x) => (
+                    <span
+                      key={x}
+                      className={`relative block h-7 w-7 rounded-full border-[5px] sm:h-9 sm:w-9 ${
+                        on ? 'border-black/70 bg-white' : 'border-black bg-[#868e96] group-hover:bg-white/80'
+                      }`}
+                    >
+                      <span className="absolute inset-[30%] rounded-full bg-black/40" />
+                    </span>
+                  ))}
+                </span>
+                <span className="text-[15px] font-semibold">{p.label}</span>
+              </button>
             );
           })}
-          <line x1="0" y1="181" x2="620" y2="181" stroke="#3a4148" strokeWidth="2" />
-        </svg>
-
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Wheel position">
-          {POSITIONS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              aria-pressed={p.id === pos}
-              onClick={() => setPos(p.id)}
-              className={`rounded-full px-4 py-2 text-[15px] font-semibold transition ${
-                p.id === pos ? 'bg-brand text-white' : 'text-white ring-1 ring-white/25 hover:ring-white/60'
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -139,10 +140,9 @@ export default function AxleFinder({ patterns }: { patterns: FinderPattern[] }) 
             >
               <Link href={p.href} className="group grid grid-cols-[56px_1fr_auto] items-center gap-4 rounded-2xl bg-charcoal-soft p-3 transition hover:bg-[#3d444b]">
                 <span className="relative block h-14 w-14 overflow-hidden rounded-xl bg-black">
-                  {p.thumb ? (
-                    <Image src={p.thumb.src} alt="" fill sizes="56px" className="object-cover" />
-                  ) : (
-                    <TreadIcon pos={pos} />
+                  <TreadIcon pos={pos} />
+                  {p.thumb && (
+                    <SafeImage src={p.thumb.src} alt="" fill sizes="56px" className="bg-white object-contain p-0.5" />
                   )}
                 </span>
                 <span className="min-w-0">

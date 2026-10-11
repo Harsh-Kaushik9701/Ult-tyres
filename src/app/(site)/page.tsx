@@ -2,14 +2,16 @@ import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { BRANDS, BRANCHES, PATTERNS } from '@/data/mockData';
 import { MEDIA, type MediaPhoto } from '@/data/media';
-import { SITE } from '@/data/site';
+import { SITE, directionsUrl } from '@/data/site';
+import { SHOWCASE } from '@/data/flagships';
 import { ButtonLink, ChevronLink, Container, Tile } from '@/components/ui';
-import TyreGraphic from '@/components/TyreGraphic';
 import HeroMotion from '@/components/motion/HeroMotion';
 import BrandTicker from '@/components/motion/BrandTicker';
 import AxleFinder, { type FinderPattern } from '@/components/motion/AxleFinder';
 import CountUp from '@/components/motion/CountUp';
 import MediaImage from '@/components/motion/MediaImage';
+import BrandShowcase, { type ShowcaseBrand } from '@/components/motion/BrandShowcase';
+import GoogleMap, { branchQuery } from '@/components/GoogleMap';
 import { POSITION_LABEL } from '@/lib/tyres';
 import { imagesFor } from '@/lib/tyreImages';
 
@@ -23,12 +25,15 @@ const APPLICATION_LABEL: Record<string, string> = {
 
 /** Truck patterns for the axle finder, as plain data the client component can receive. */
 function finderPatterns(): FinderPattern[] {
-  return PATTERNS.filter((p) => p.active !== false && p.category === 'truck').map((p) => {
+  const order = new Set(Object.values(SHOWCASE).flat());
+  const truck = PATTERNS.filter((p) => p.active !== false && p.category === 'truck');
+  const sorted = [...truck.filter((p) => order.has(p.id)), ...truck.filter((p) => !order.has(p.id))];
+  return sorted.map((p) => {
     const photos = imagesFor(p);
     const thumb = photos.find((i) => i.kind === 'tread') ?? photos[0];
     return {
       id: p.id,
-      name: p.name,
+      name: `${p.brandName} ${p.code}`,
       brandName: p.brandName,
       href: `/tyres/${p.brandId}/${p.code.toLowerCase()}`,
       positions: p.positions,
@@ -38,6 +43,29 @@ function finderPatterns(): FinderPattern[] {
       thumb: thumb ? { src: thumb.src, width: thumb.width, height: thumb.height } : undefined,
     };
   });
+}
+
+/** Flagship patterns per brand for the showcase carousel. */
+function showcaseBrands(): ShowcaseBrand[] {
+  return BRANDS.filter((b) => b.slug in SHOWCASE).map((b) => ({
+    id: b.id,
+    name: b.name,
+    tagline: b.tagline,
+    badge: b.isAuthorisedDistributor ? 'Authorised distributor' : 'In stock',
+    href: `/tyres/${b.slug}`,
+    tyres: SHOWCASE[b.slug as keyof typeof SHOWCASE]
+      .map((id) => PATTERNS.find((p) => p.id === id))
+      .filter((p) => p !== undefined)
+      .map((p) => ({
+        id: p.id,
+        code: p.code,
+        href: `/tyres/${p.brandId}/${p.code.toLowerCase()}`,
+        positions: p.positions.map((x) => POSITION_LABEL[x]).join(' / '),
+        application: p.applications.map((a) => APPLICATION_LABEL[a] ?? a).join(', '),
+        description: p.description,
+        photo: imagesFor(p).find((i) => i.kind === 'side')?.src ?? imagesFor(p)[0]?.src,
+      })),
+  }));
 }
 
 function PhotoTile({
@@ -69,11 +97,11 @@ function PhotoTile({
 export default function HomePage() {
   return (
     <>
-      <HeroMotion tagline={SITE.tagline} />
+      <HeroMotion />
       <BrandTicker />
 
       {/* Axle finder */}
-      <section id="find-your-tyre" className="scroll-mt-20 bg-white py-16 sm:py-24">
+      <section id="find-your-tyre" className="scroll-mt-28 bg-white py-16 sm:py-24">
         <Container>
           <div className="reveal mb-8 max-w-2xl">
             <p className="text-[15px] font-semibold text-brand">Find your tyre</p>
@@ -92,23 +120,16 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Brands */}
-      <section className="pb-4">
+      {/* Brand showcase */}
+      <section className="pb-8">
         <Container>
-          <div className="grid gap-4 md:grid-cols-3">
-            {BRANDS.map((brand) => (
-              <Tile key={brand.id} dark={brand.isAuthorisedDistributor} className="reveal tile-lift group flex flex-col items-center px-6 pb-8 pt-10 text-center">
-                <p className={`text-[13px] font-semibold ${brand.isAuthorisedDistributor ? 'text-brand-light' : 'text-muted'}`}>
-                  {brand.isAuthorisedDistributor ? 'Authorised distributor' : 'In stock'}
-                </p>
-                <h2 className="mt-1 text-4xl font-semibold">{brand.name}</h2>
-                <p className={`mt-2 text-[17px] ${brand.isAuthorisedDistributor ? 'text-on-dark' : 'text-muted'}`}>{brand.tagline}</p>
-                <ChevronLink href={`/tyres/${brand.slug}`} tone={brand.isAuthorisedDistributor ? 'light' : 'brand'} className="mt-4">
-                  See the range
-                </ChevronLink>
-                <TyreGraphic tone={brand.isAuthorisedDistributor ? 'light' : 'dark'} className="mt-6 w-28 transition-transform duration-700 group-hover:rotate-45 sm:w-40" />
-              </Tile>
-            ))}
+          <div className="reveal mb-8 max-w-2xl">
+            <p className="text-[15px] font-semibold text-brand">Our tyre ranges</p>
+            <h2 className="mt-1 text-4xl font-bold uppercase sm:text-6xl">Flagship tyres, in stock.</h2>
+            <p className="mt-3 text-lg text-muted">Steer, drive and trailer patterns from Ralson, Blacklion and Triangle.</p>
+          </div>
+          <div className="reveal">
+            <BrandShowcase brands={showcaseBrands()} />
           </div>
         </Container>
       </section>
@@ -120,6 +141,7 @@ export default function HomePage() {
             <div>
               <p className="text-[15px] font-semibold text-brand">Fleet services</p>
               <h2 className="mt-1 text-4xl font-bold uppercase sm:text-6xl">We keep you rolling.</h2>
+              <p className="mt-3 max-w-xl text-lg text-muted">Downtime costs you money. Straight wheels, the right pressure and the right tread lower your cost per kilometre.</p>
             </div>
             <ChevronLink href="/fleet-services">All services</ChevronLink>
           </div>
@@ -130,15 +152,15 @@ export default function HomePage() {
               <div className="flex flex-wrap gap-x-10 gap-y-6">
                 <div>
                   <p className="font-display text-6xl font-extrabold leading-none sm:text-7xl">
-                    <CountUp to={137} />
+                    <CountUp to={SITE.google.reviewCount} />
                   </p>
                   <p className="mt-1 text-[13px] uppercase tracking-wider text-on-dark">Google reviews</p>
                 </div>
                 <div>
                   <p className="font-display text-6xl font-extrabold leading-none sm:text-7xl">
-                    <CountUp to={5} decimals={1} />
+                    <CountUp to={SITE.google.rating} decimals={1} />
                   </p>
-                  <p className="mt-1 flex gap-0.5 text-amber" aria-label="5 out of 5 stars">
+                  <p className="mt-1 flex gap-0.5 text-amber" aria-label={`${SITE.google.rating} out of 5 stars`}>
                     {Array.from({ length: 5 }, (_, i) => (
                       <Star key={i} className="h-4 w-4 fill-current" aria-hidden />
                     ))}
@@ -198,31 +220,52 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Branches */}
+      {/* Branches + live Google Map */}
       <section className="py-16 sm:py-24">
-        <Container className="reveal text-center">
-          <h2 className="text-3xl font-semibold sm:text-5xl">Three branches. One number.</h2>
-          <p className="mt-3 text-lg text-muted">{BRANCHES.map((b) => b.suburb).join(' · ')}</p>
-          <p className="mt-6">
-            <a href={SITE.phoneHref} className="text-3xl font-semibold tracking-tight text-ink hover:text-brand sm:text-4xl">
-              {SITE.phone}
-            </a>
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-6">
-            <ChevronLink href="/network-map">Find a branch</ChevronLink>
-            <ChevronLink href="/contact">Contact us</ChevronLink>
+        <Container>
+          <div className="reveal grid items-stretch gap-6 md:grid-cols-[.9fr_1.1fr]">
+            <div className="flex flex-col justify-center">
+              <h2 className="text-4xl font-bold uppercase sm:text-5xl">Three branches. One number.</h2>
+              <p className="mt-6">
+                <a href={SITE.phoneHref} className="text-4xl font-semibold tracking-tight text-ink hover:text-brand">
+                  {SITE.phone}
+                </a>
+              </p>
+              <ul className="mt-6 divide-y divide-line/70 border-y border-line/70">
+                {BRANCHES.map((b) => (
+                  <li key={b.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
+                    <span>
+                      <span className="font-semibold">{b.suburb}</span>
+                      {b.isHq && <span className="ml-2 text-[13px] text-muted">Head office</span>}
+                      <span className="block text-[15px] text-muted">
+                        {b.address}, {b.suburb} {b.state} {b.postcode}
+                      </span>
+                    </span>
+                    <a href={directionsUrl(branchQuery(b))} target="_blank" rel="noreferrer" className="text-[15px] font-medium text-brand hover:underline">
+                      Directions ›
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-6 flex flex-wrap items-center gap-1.5 text-[15px] text-muted">
+                <span className="flex text-amber" aria-hidden>
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </span>
+                Rated {SITE.google.rating} from {SITE.google.reviewCount} reviews on{' '}
+                <Link href={SITE.google.url} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
+                  Google
+                </Link>
+              </p>
+              <div className="mt-4">
+                <ChevronLink href="/network-map">See all branches on the map</ChevronLink>
+              </div>
+            </div>
+            <div className="h-[360px] overflow-hidden rounded-3xl bg-panel md:h-auto md:min-h-[440px]">
+              <GoogleMap query={branchQuery(BRANCHES[0])} title="Google Map of Ultimate Tyre Services, Rocklea" zoom={15} />
+            </div>
           </div>
-          <p className="mt-10 flex flex-wrap items-center justify-center gap-1.5 text-[15px] text-muted">
-            <span className="flex text-amber" aria-hidden>
-              {Array.from({ length: 5 }, (_, i) => (
-                <Star key={i} className="h-4 w-4 fill-current" />
-              ))}
-            </span>
-            Rated 5 stars by 137 customers on{' '}
-            <Link href="https://www.google.com/maps/search/Ultimate+Tyres+Rocklea" className="underline underline-offset-2 hover:text-ink">
-              Google
-            </Link>
-          </p>
         </Container>
       </section>
     </>

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Menu, Phone, X, ChevronDown } from 'lucide-react';
 import { NAV, SITE } from '@/data/site';
 import { useApp } from '@/context/AppContext';
+import UtilityRibbon from '@/components/UtilityRibbon';
 
 function Logo() {
   return (
@@ -37,6 +38,7 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/70 bg-white/85 backdrop-blur-xl">
+      <UtilityRibbon accountHref={accountHref} accountLabel={isDealer ? 'Dealer portal' : 'Dealer login'} />
       <div className="mx-auto flex h-14 max-w-[1080px] items-center justify-between gap-4 px-5">
         <Logo />
 
@@ -92,16 +94,9 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <a
-            href={SITE.phoneHref}
-            className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] text-ink/75 hover:text-ink sm:flex"
-          >
-            <Phone className="h-3.5 w-3.5" aria-hidden />
-            {SITE.phone}
-          </a>
           <Link
             href={accountHref}
-            className="rounded-full bg-brand px-4 py-1.5 text-[13px] font-medium text-white transition hover:bg-brand-dark"
+            className="hidden rounded-full bg-brand px-4 py-1.5 sm:block text-[13px] font-medium text-white transition hover:bg-brand-dark"
           >
             {accountLabel}
           </Link>
@@ -119,7 +114,7 @@ export default function SiteHeader() {
 
       {/* Mobile menu */}
       {open && (
-        <nav className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto border-t border-line/70 bg-white lg:hidden" aria-label="Main">
+        <nav className="max-h-[calc(100dvh-5.75rem)] overflow-y-auto border-t border-line/70 bg-white lg:hidden" aria-label="Main">
           <ul className="mx-auto max-w-[1080px] px-5 py-4">
             {NAV.map((item) => (
               <li key={item.label} className="border-b border-line/60 last:border-0">

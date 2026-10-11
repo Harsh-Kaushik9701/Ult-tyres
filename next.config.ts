@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         hostname: "images.pexels.com",
         pathname: "/photos/**",
       },
+      // Official product photos listed in src/data/brandImages.json. `npm run brand-images` saves
+      // local copies, which take over automatically; these can then be removed.
+      { protocol: "https", hostname: "ralsonglobal.com", pathname: "/storage/products/**" },
+      { protocol: "https", hostname: "www.blackliontires.com.cn", pathname: "/uploads/**" },
+      { protocol: "https", hostname: "en.triangle.com.cn", pathname: "/Public/Uploads/**" },
     ],
   },
 };
