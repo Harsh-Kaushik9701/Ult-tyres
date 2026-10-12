@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import { ButtonLink, ChevronLink, Container, PageHero, Tile } from '@/components/ui';
 import EnquiryForm from '@/components/EnquiryForm';
 import TyreGraphic from '@/components/TyreGraphic';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Ultimate ReadyFit',
-  description: 'Tyres delivered already fitted and balanced on rims, ready to bolt on.',
-};
+export const metadata: Metadata = seoMetadata(SEO.readyFit);
 
 const STEPS = [
   { title: 'Pick your tyre and rim', text: 'Ralson, Blacklion or Triangle on steel or alloy.' },

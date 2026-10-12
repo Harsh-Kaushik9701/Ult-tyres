@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import LegalPage from '@/components/LegalPage';
 import { SITE } from '@/data/site';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = { title: 'Terms of trade' };
+export const metadata: Metadata = seoMetadata(SEO.terms);
 
 export default function TermsPage() {
   return (

@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
+import { serviceSeo } from '@/lib/seoDynamic';
 import { notFound } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { FLEET_SERVICES } from '@/data/mockData';
@@ -17,8 +19,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const service = FLEET_SERVICES.find((s) => s.slug === slug);
-  return service ? { title: service.name, description: service.shortDesc } : {};
+  const seo = serviceSeo(slug);
+  return seo ? pageMetadata(seo) : {};
 }
 
 export default async function FleetServicePage({ params }: Props) {

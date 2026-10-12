@@ -2,14 +2,14 @@ import type { Metadata } from 'next';
 import { MapPin, MessageCircle, Phone } from 'lucide-react';
 import { BRANCHES } from '@/data/mockData';
 import { SITE, directionsUrl } from '@/data/site';
-import GoogleMap, { branchQuery } from '@/components/GoogleMap';
+import GoogleMap from '@/components/GoogleMap';
+import { branchQuery } from '@/lib/branches';
 import { Container, PageHero, Tile } from '@/components/ui';
 import EnquiryForm from '@/components/EnquiryForm';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Ring, WhatsApp or send us a message. Branches at Rocklea, Yatala and Bald Hills.',
-};
+export const metadata: Metadata = seoMetadata(SEO.contact);
 
 export default function ContactPage() {
   return (

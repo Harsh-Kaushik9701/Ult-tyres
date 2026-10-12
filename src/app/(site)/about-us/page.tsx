@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { BRANCHES } from '@/data/mockData';
 import { ButtonLink, ChevronLink, Container, PageHero, Tile } from '@/components/ui';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'About us',
-  description: 'A Brisbane truck tyre business built on honest service and fair prices.',
-};
+export const metadata: Metadata = seoMetadata(SEO.about);
 
 const VALUES = [
   { title: 'Honest advice', text: 'We tell you what you need, not what costs the most.' },

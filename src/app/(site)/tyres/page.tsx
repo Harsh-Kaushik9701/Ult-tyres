@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import { BRANDS } from '@/data/mockData';
 import { ChevronLink, Container, PageHero, Tile } from '@/components/ui';
 import TyreGraphic from '@/components/TyreGraphic';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Tyres',
-  description: 'Ralson, Blacklion and Triangle truck and bus tyres.',
-};
+export const metadata: Metadata = seoMetadata(SEO.tyres);
 
 export default function TyresPage() {
   return (

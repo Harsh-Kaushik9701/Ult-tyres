@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import { FLEET_SERVICES } from '@/data/mockData';
 import { ChevronLink, Container, PageHero } from '@/components/ui';
 import { SITE } from '@/data/site';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Fleet services',
-  description: 'Wheel alignment, balancing, tyre fitting, ReadyFit and more, in our bays or at your depot.',
-};
+export const metadata: Metadata = seoMetadata(SEO.fleetServices);
 
 export default function FleetServicesPage() {
   return (

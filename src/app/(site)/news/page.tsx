@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ARTICLES, formatDate } from '@/data/content';
 import { Container, PageHero } from '@/components/ui';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'News & events',
-  description: 'News, events and tyre tips from Ultimate Tyres.',
-};
+export const metadata: Metadata = seoMetadata(SEO.news);
 
 export default function NewsPage() {
   return (

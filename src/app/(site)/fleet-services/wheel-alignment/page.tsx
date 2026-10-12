@@ -3,11 +3,10 @@ import { ChevronLink, Container, PageHero, SectionHeading, Tile } from '@/compon
 import EnquiryForm from '@/components/EnquiryForm';
 import { SITE } from '@/data/site';
 import { BRANCHES } from '@/data/mockData';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Wheel alignment Brisbane',
-  description: 'Truck, trailer and car wheel alignment at Rocklea, Yatala and Bald Hills.',
-};
+export const metadata: Metadata = seoMetadata(SEO.wheelAlignment);
 
 const BENEFITS = [
   { title: 'Longer tyre life', text: 'Straight wheels wear tyres evenly.' },

@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Container, PageHero } from '@/components/ui';
 import TyreFinder from '@/components/TyreFinder';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Bus tyres',
-  description: 'Bus and coach tyres from Ralson, Blacklion and Triangle.',
-};
+export const metadata: Metadata = seoMetadata(SEO.busTyres);
 
 export default function BusTyresPage() {
   return (

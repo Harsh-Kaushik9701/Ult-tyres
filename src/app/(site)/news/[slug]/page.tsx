@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
+import { articleSeo } from '@/lib/seoDynamic';
 import { notFound } from 'next/navigation';
 import { ARTICLES, formatDate } from '@/data/content';
 import { ChevronLink, Container } from '@/components/ui';
@@ -11,8 +13,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const a = ARTICLES.find((x) => x.slug === slug);
-  return a ? { title: a.title, description: a.summary } : {};
+  const seo = articleSeo(slug);
+  return seo ? pageMetadata(seo) : {};
 }
 
 export default async function ArticlePage({ params }: Props) {

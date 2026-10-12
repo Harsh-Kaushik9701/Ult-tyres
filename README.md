@@ -24,7 +24,7 @@ cp .env.example .env.local   # fill in values
 npm run dev                  # http://localhost:3000
 ```
 
-`next/font/google` downloads fonts at build time, so `npm run build` needs internet access.
+Fonts are bundled in `src/fonts`, so `npm run dev` and `npm run build` work with no internet. Offline, the Google Map shows the address and a directions link instead, and stock photos and videos simply don't show.
 
 ## Environment variables
 
@@ -45,6 +45,14 @@ See `.env.example`.
 ## Design
 
 Simple, Apple-style layout: white and light-grey surfaces, big short headlines, one idea per section, charcoal tiles for contrast, High-Vis Red only for actions. Copy is short and in Australian English. Shared building blocks live in `src/components/ui.tsx`; use them instead of one-off styles. Tokens are in `src/app/globals.css`.
+
+## Server rendering and SEO
+
+- Every public page (home, tyres, fleet services, about, news, network map, contact, join us, dealer pages, legal) is a **server component**, prerendered to HTML at build time. Interactive parts (forms, the branch map, careers) are client components inside them, and they render on the server first too.
+- **Meta title, description and keywords** for fixed pages live in `src/data/seo.ts`. Tyre, brand, service and news pages build theirs from their data in `src/lib/seoDynamic.ts`. `pageMetadata()` in `src/lib/seo.ts` adds the canonical URL, Open Graph and Twitter tags.
+- **og:image**: each page folder has an `opengraph-image.tsx` that draws a branded 1200×630 share image at build time (`src/lib/og.tsx`). Tyre patterns, brands, services and articles each get their own.
+- `robots.txt` and `sitemap.xml` are generated from the same data. `/portal` and `/admin` are marked noindex.
+- The home page includes schema.org `TireShop` data for each branch.
 
 ## Motion and media
 

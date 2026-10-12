@@ -1,9 +1,12 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { BRANDS, BRANCHES, PATTERNS } from '@/data/mockData';
 import { MEDIA, type MediaPhoto } from '@/data/media';
 import { SITE, directionsUrl } from '@/data/site';
 import { SHOWCASE } from '@/data/flagships';
+import { SEO } from '@/data/seo';
+import { seoMetadata, SITE_URL } from '@/lib/seo';
 import { ButtonLink, ChevronLink, Container, Tile } from '@/components/ui';
 import HeroMotion from '@/components/motion/HeroMotion';
 import BrandTicker from '@/components/motion/BrandTicker';
@@ -11,9 +14,12 @@ import AxleFinder, { type FinderPattern } from '@/components/motion/AxleFinder';
 import CountUp from '@/components/motion/CountUp';
 import MediaImage from '@/components/motion/MediaImage';
 import BrandShowcase, { type ShowcaseBrand } from '@/components/motion/BrandShowcase';
-import GoogleMap, { branchQuery } from '@/components/GoogleMap';
+import GoogleMap from '@/components/GoogleMap';
+import { branchQuery } from '@/lib/branches';
 import { POSITION_LABEL } from '@/lib/tyres';
 import { imagesFor } from '@/lib/tyreImages';
+
+export const metadata: Metadata = seoMetadata(SEO.home);
 
 const APPLICATION_LABEL: Record<string, string> = {
   'long-haul': 'long haul',
@@ -94,9 +100,41 @@ function PhotoTile({
   );
 }
 
+/** schema.org listing for each branch, so search engines can show the business details. */
+function businessJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': BRANCHES.map((b) => ({
+      '@type': 'TireShop',
+      '@id': `${SITE_URL}/network-map#${b.id}`,
+      name: b.isHq ? SITE.google.listingName : `Ultimate Tyres ${b.suburb}`,
+      url: SITE_URL,
+      telephone: '+61 1300 110 002',
+      image: `${SITE_URL}/opengraph-image`,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: b.address,
+        addressLocality: b.suburb,
+        addressRegion: b.state,
+        postalCode: b.postcode,
+        addressCountry: 'AU',
+      },
+      geo: { '@type': 'GeoCoordinates', latitude: b.coordinates.lat, longitude: b.coordinates.lng },
+      areaServed: 'South East Queensland',
+      brand: ['Ralson', 'Blacklion', 'Triangle'],
+      sameAs: [SITE.facebook, SITE.instagram],
+    })),
+  };
+}
+
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        // JSON built from our own data, not user input.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd()).replace(/</g, '\\u003c') }}
+      />
       <HeroMotion />
       <BrandTicker />
 

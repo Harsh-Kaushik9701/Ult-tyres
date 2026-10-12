@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import { ChevronLink, Container, PageHero, Tile } from '@/components/ui';
+import { SEO } from '@/data/seo';
+import { seoMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Join us',
-  description: 'Become an Ultimate Tyres dealer or come and work with us.',
-};
+export const metadata: Metadata = seoMetadata(SEO.joinUs);
 
 export default function JoinUsPage() {
   return (
